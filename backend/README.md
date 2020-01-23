@@ -15,3 +15,7 @@
 3. Run in shell `docker run -d -p 5000:5000 patient_pay_backend`
 4. Ensure that process is running by `docker ps`
 5. To kill, run `docker kill <CONTAINER_ID>` (found by `docker ps`)
+## Testing
+### Run Unit Tests
+1. Run in shell `pytest`
+2. For coverage, Run in shell `coverage run -m pytest && coverage report`
