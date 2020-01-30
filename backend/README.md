@@ -19,3 +19,6 @@
 ### Run Unit Tests
 1. Run in shell `pytest`
 2. For coverage, Run in shell `coverage run -m pytest && coverage report`
+
+# Flask Information
+https://opensource.com/article/18/4/flask
