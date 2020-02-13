@@ -1,10 +1,13 @@
 from src.blueprints.core.bp import bp
 from flask import request
-from flask import jsonify
+from flask import jsonify, Response
 from app import db
 from src.models.QueueJob import QueueJob
 from src.models.Cohort import Cohort
 import json
+
+def build_json_response(obj):
+    return Response(obj, content_type='application/json')
 
 @bp.route("/")
 def hello_world():
@@ -80,36 +83,7 @@ def get_jobs():
         jobDict['status'] = job.status
         jobDict['dateCreated'] = job.date_created
         jobList.append(jobDict)
-    return json.dumps(jobList, default=str)
-
-# Cancel a job that is not currently running
-@bp.route("/jobs/cancel/<int:job_id>", methods=['PATCH'])
-def cancel_job(job_id):
-    job = QueueJob.query.get(job_id)
-
-    # Check the current status of the job
-    if job.status is 0:
-        job.status = 3
-        db.session.commit()
-
-    return {
-        "jobId": job.id,
-        "status": job.status,
-        "dateCreated": job.date_created
-    }
-
-# Retrieve a list of jobs currently in the job queue database
-@bp.route("/jobs")
-def get_jobs():
-    jobs = QueueJob.query.all()
-    jobList = []
-    for job in jobs:
-        jobDict = dict()
-        jobDict['jobId'] = job.id
-        jobDict['status'] = job.status
-        jobDict['dateCreated'] = job.date_created
-        jobList.append(jobDict)
-    return json.dumps(jobList, default=str)
+    return build_json_response(json.dumps(jobList, default=str))
 
 # Cancel a job that is not currently running
 @bp.route("/jobs/cancel/<int:job_id>", methods=['PATCH'])
@@ -139,4 +113,4 @@ def get_cohorts():
         chtDict['text'] = cht.text
         chtDict['email'] = cht.email
         chtList.append(chtDict)
-    return json.dumps(chtList, default=str)
+    return build_json_response(json.dumps(chtList, default=str))
