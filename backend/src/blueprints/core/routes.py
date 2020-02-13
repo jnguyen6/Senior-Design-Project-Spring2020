@@ -98,6 +98,35 @@ def cancel_job(job_id):
         "dateCreated": job.date_created
     }
 
+# Retrieve a list of jobs currently in the job queue database
+@bp.route("/jobs")
+def get_jobs():
+    jobs = QueueJob.query.all()
+    jobList = []
+    for job in jobs:
+        jobDict = dict()
+        jobDict['jobId'] = job.id
+        jobDict['status'] = job.status
+        jobDict['dateCreated'] = job.date_created
+        jobList.append(jobDict)
+    return json.dumps(jobList, default=str)
+
+# Cancel a job that is not currently running
+@bp.route("/jobs/cancel/<int:job_id>", methods=['PATCH'])
+def cancel_job(job_id):
+    job = QueueJob.query.get(job_id)
+
+    # Check the current status of the job
+    if job.status is 0:
+        job.status = 3
+        db.session.commit()
+
+    return {
+        "jobId": job.id,
+        "status": job.status,
+        "dateCreated": job.date_created
+    }
+
 # Get all updated cohorts
 @bp.route("/patient/cohorts")
 def get_cohorts():
