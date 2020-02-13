@@ -4,22 +4,21 @@
     </head>
 
     <body>
-        Below is the table of jobs.
+        <h1>JOBS</h1>
 
         <table border = 1>
             <tr>
-                {% for value in jobs[0] %}
-                        <th> {{ value }} </th>
-                    {% endfor %}
+                {% for key,value in jobs[0].items() %}
+                    <th>{{ key }}</th>
+                {% endfor %}
             </tr>
-            {% for result in jobs %}
-                <tr>
-
-                    <td> {{ result.jobId }} </td>
-                    <td> {{ result.status }} </td>
-                    <td> {{ result.dateCreated }} </td>
-                </tr>
-            {% endfor %}
+                {% for job in jobs %}
+                    <tr>
+                        {% for key,value in job.items() %}
+                            <td>{{ value }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
         </table>
     </body>
 </html>
