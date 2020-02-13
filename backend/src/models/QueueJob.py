@@ -10,7 +10,11 @@ class QueueStatus(Enum):
 
 class QueueJob(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    status = db.Column(db.Integer, nullable = False, default = QueueStatus.NOT_STARTED)
+
+    # For now, I set the default value to 0 instead of QueueStatus.NOT_STARTED. For some reason, the error
+    # sqlalchemy.exc.ProgrammingError: (psycopg2.ProgrammingError) can't adapt type 'QueueStatus'
+    # is thrown.
+    status = db.Column(db.Integer, nullable = False, default = 0)
     date_created = db.Column(db.DateTime, nullable = False, default = datetime.utcnow)
 
     def __repr__(self):
