@@ -1,5 +1,6 @@
 # Patient Pay Backend
 ## Local Database
+### macOS / Unix Instructions
 1. Install PostgreSQL and make sure it is currently running (confirm by running `postgres -v`)
 2. On the shell, run `psql postgres`
 3. Within psql, run `CREATE ROLE admin WITH LOGIN PASSWORD 'Password1!';`
@@ -8,6 +9,13 @@
 6. On the shell, run `psql postgres -U admin`
 7. Within psql, run `CREATE DATABASE backend;`
 8. Within psql, run `GRANT ALL PRIVILEGES ON DATABASE backend TO admin;`
+### Windows Instructions
+1. Install PostgreSQL and add it to your PATH (confirm by running `postgres -v`)
+2. On the shell, run `psql -U postgres`
+3. Within psql, run `CREATE ROLE admin WITH LOGIN PASSWORD 'Password1!';`
+4. Within psql, run `ALTER ROLE admin CREATEDB;`
+5. Within psql, run `CREATE DATABASE backend;`
+6. Within psql, run `GRANT ALL PRIVILEGES ON DATABASE backend TO admin;`
 ## Local Development
 ### Installation
 1. Install Python and Pip (package manager)
