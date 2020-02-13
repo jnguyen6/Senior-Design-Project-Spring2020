@@ -1,0 +1,25 @@
+<html>
+    <head>
+        <title>Jobs</title>
+    </head>
+
+    <body>
+        Below is the table of jobs.
+
+        <table border = 1>
+            <tr>
+                {% for value in jobs[0] %}
+                        <th> {{ value }} </th>
+                    {% endfor %}
+            </tr>
+            {% for result in jobs %}
+                <tr>
+
+                    <td> {{ result.jobId }} </td>
+                    <td> {{ result.status }} </td>
+                    <td> {{ result.dateCreated }} </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </body>
+</html>

@@ -14,3 +14,6 @@ def create_tables():
 
 from src.blueprints.core import bp as bp_core
 bp_core.config(app)
+
+from src.blueprints.views import bp as bp_views
+bp_views.config(app)
