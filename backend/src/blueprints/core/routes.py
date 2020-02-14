@@ -2,7 +2,6 @@ from src.blueprints.core.bp import bp
 from flask import request
 from flask import jsonify, Response
 from app import db
-from src.models.QueueJob import QueueJob
 from src.models.Cohort import Cohort
 import json
 
@@ -29,6 +28,7 @@ def info_view():
 # Create a new learning job and store that in the job queue database
 @bp.route("/jobs", methods=['POST'])
 def create_job():
+    from src.models.QueueJob import QueueJob
     newQueueJob = QueueJob()
     db.session.add(newQueueJob)
     db.session.commit()
@@ -53,6 +53,7 @@ def create_job():
 # Retrieve a learning job from the job queue database by id
 @bp.route("/jobs/<int:job_id>")
 def get_job(job_id):
+    from src.models.QueueJob import QueueJob
     job = QueueJob.query.get(job_id)
 
     # Check the current status of the newly created job
@@ -75,6 +76,7 @@ def get_job(job_id):
 # Retrieve a list of jobs currently in the job queue database
 @bp.route("/jobs")
 def get_jobs():
+    from src.models.QueueJob import QueueJob
     jobs = QueueJob.query.all()
     jobList = []
     for job in jobs:
@@ -88,6 +90,7 @@ def get_jobs():
 # Cancel a job that is not currently running
 @bp.route("/jobs/cancel/<int:job_id>", methods=['PATCH'])
 def cancel_job(job_id):
+    from src.models.QueueJob import QueueJob
     job = QueueJob.query.get(job_id)
 
     # Check the current status of the job
@@ -114,3 +117,4 @@ def get_cohorts():
         chtDict['email'] = cht.email
         chtList.append(chtDict)
     return build_json_response(json.dumps(chtList, default=str))
+

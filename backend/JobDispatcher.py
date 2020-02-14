@@ -1,5 +1,5 @@
 import time
-from src.models.QueueJob import QueueJob
+from app import db
 
 # Runs the background task of continuously checking the database and updating
 # the job statuses.
@@ -7,6 +7,7 @@ def run_background_task():
     print("Background task started.")
     while True:
         time.sleep(5)
+        from src.models.QueueJob import QueueJob
         jobs = QueueJob.query.all()
 
         for job in jobs:
@@ -15,6 +16,7 @@ def run_background_task():
                 print("Job " + str(job.id) + " is now in progress.")
                 # If the job has not started yet, set the status to 1 (IN_PROGRESS)
                 job.status = 1
+                db.session.commit()
                 # And wait for a certain amount of time (Testing purposes)
                 time.sleep(5)
                 # TODO: Send job to learning algorithm component.
@@ -23,4 +25,7 @@ def run_background_task():
 
                 print("Job " + str(job.id) + " is now done.")
                 job.status = 2
+                db.session.commit()
                 break
+
+run_background_task()
