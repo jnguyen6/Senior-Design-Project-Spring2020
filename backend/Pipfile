@@ -8,6 +8,8 @@ flask = "*"
 flask-sqlalchemy = "*"
 pytest = "*"
 psycopg2-binary = "*"
+numpy = "*"
+matplotlib = "*"
 
 [requires]
 python_version = "3.7"
