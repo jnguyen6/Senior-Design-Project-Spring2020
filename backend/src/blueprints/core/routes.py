@@ -69,7 +69,7 @@ def get_job(job_id):
 
     return {
         "jobId": job.id,
-        "status": job.status,
+        "status": status,
         "dateCreated": job.date_created
     }
 
@@ -82,7 +82,14 @@ def get_jobs():
     for job in jobs:
         jobDict = dict()
         jobDict['jobId'] = job.id
-        jobDict['status'] = job.status
+        if job.status is 0:
+            jobDict['status'] = "NOT_STARTED"
+        elif job.status is 1:
+            jobDict['status'] = "IN_PROGRESS"
+        elif job.status is 2:
+            jobDict['status'] = "DONE"
+        elif job.status is 3:
+            jobDict['status'] = "CANCELLED"
         jobDict['dateCreated'] = job.date_created
         jobList.append(jobDict)
     return build_json_response(json.dumps(jobList, default=str))
@@ -100,7 +107,7 @@ def cancel_job(job_id):
 
     return {
         "jobId": job.id,
-        "status": job.status,
+        "status": "CANCELLED",
         "dateCreated": job.date_created
     }
 
