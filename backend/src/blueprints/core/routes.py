@@ -1,10 +1,12 @@
 from src.blueprints.core.bp import bp
 from flask import request
-from flask import jsonify
+from flask import jsonify, Response
 from app import db
-from src.models.QueueJob import QueueJob
 from src.models.Cohort import Cohort
 import json
+
+def build_json_response(obj):
+    return Response(obj, content_type='application/json')
 
 @bp.route("/")
 def hello_world():
@@ -26,6 +28,7 @@ def info_view():
 # Create a new learning job and store that in the job queue database
 @bp.route("/jobs", methods=['POST'])
 def create_job():
+    from src.models.QueueJob import QueueJob
     newQueueJob = QueueJob()
     db.session.add(newQueueJob)
     db.session.commit()
@@ -50,6 +53,7 @@ def create_job():
 # Retrieve a learning job from the job queue database by id
 @bp.route("/jobs/<int:job_id>")
 def get_job(job_id):
+    from src.models.QueueJob import QueueJob
     job = QueueJob.query.get(job_id)
 
     # Check the current status of the newly created job
@@ -65,26 +69,35 @@ def get_job(job_id):
 
     return {
         "jobId": job.id,
-        "status": job.status,
+        "status": status,
         "dateCreated": job.date_created
     }
 
 # Retrieve a list of jobs currently in the job queue database
 @bp.route("/jobs")
 def get_jobs():
+    from src.models.QueueJob import QueueJob
     jobs = QueueJob.query.all()
     jobList = []
     for job in jobs:
         jobDict = dict()
         jobDict['jobId'] = job.id
-        jobDict['status'] = job.status
+        if job.status is 0:
+            jobDict['status'] = "NOT_STARTED"
+        elif job.status is 1:
+            jobDict['status'] = "IN_PROGRESS"
+        elif job.status is 2:
+            jobDict['status'] = "DONE"
+        elif job.status is 3:
+            jobDict['status'] = "CANCELLED"
         jobDict['dateCreated'] = job.date_created
         jobList.append(jobDict)
-    return json.dumps(jobList, default=str)
+    return build_json_response(json.dumps(jobList, default=str))
 
 # Cancel a job that is not currently running
 @bp.route("/jobs/cancel/<int:job_id>", methods=['PATCH'])
 def cancel_job(job_id):
+    from src.models.QueueJob import QueueJob
     job = QueueJob.query.get(job_id)
 
     # Check the current status of the job
@@ -94,10 +107,9 @@ def cancel_job(job_id):
 
     return {
         "jobId": job.id,
-        "status": job.status,
+        "status": "CANCELLED",
         "dateCreated": job.date_created
-    }
-
+      
 # Run the learning algorithm against the patient and categorize them
 @bp.route("/patient/analyze", methods=['POST'])
 def analyze_patient(patient_json):
@@ -117,4 +129,5 @@ def get_cohorts():
         chtDict['text'] = cht.text
         chtDict['email'] = cht.email
         chtList.append(chtDict)
-    return json.dumps(chtList, default=str)
+    return build_json_response(json.dumps(chtList, default=str))
+

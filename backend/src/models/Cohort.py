@@ -1,6 +1,5 @@
 from app import db
 
-
 class Cohort(db.Model):
     cid = db.Column(db.Integer, primary_key=True)
     paper = db.Column(db.String(30), unique=True, nullable=False)
