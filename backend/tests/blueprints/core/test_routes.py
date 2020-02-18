@@ -4,7 +4,7 @@ from src.models.QueueJob import QueueStatus
 
 @pytest.fixture
 def queue_shape():
-    return dict(id=0, status="", date_created="").keys()
+    return dict(jobId=0, status="", dateCreated="").keys()
 
 def test_create_job(client, queue_shape):
     resp = client.post('/jobs')
@@ -23,30 +23,30 @@ def test_get_all_jobs(client, queue_shape):
         assert data_list[0].keys() == queue_shape
 
 def test_get_job_by_id(client, queue_shape):
-    new_job = json.loads(client.post('/jobs'))
-    resp = client.get(f'/jobs/{new_job["id"]}')
+    new_job = json.loads(client.post('/jobs').data)
+    resp = client.get(f'/jobs/{new_job["jobId"]}')
     assert resp.status_code == 200
 
     resp_json = json.loads(resp.data)
     assert resp_json.keys() == queue_shape
 
-    assert resp_json["id"] == new_job["id"]
+    assert resp_json["jobId"] == new_job["jobId"]
 
 def test_get_job_by_id_fail(client):
     resp = client.get(f'/jobs/{-1}')
     assert resp.status_code == 404
 
 def test_cancel_job(client, queue_shape):
-    new_job = json.loads(client.post('/jobs'))
-    resp = client.patch(f'/jobs/cancel/{new_job["id"]}')
+    new_job = json.loads(client.post('/jobs').data)
+    resp = client.patch(f'/jobs/cancel/{new_job["jobId"]}')
     assert resp.status_code == 200
 
     resp_json = json.loads(resp.data)
     assert resp_json.keys() == queue_shape
 
-    assert resp_json["id"] == new_job["id"]
+    assert resp_json["jobId"] == new_job["jobId"]
 
-    assert resp_json["status"] == QueueStatus.CANCELLED
+    assert resp_json["status"] == QueueStatus.CANCELLED.value
 
 def test_analyze_patient(client):
     patient = dict(

@@ -112,10 +112,8 @@ def cancel_job(job_id):
       
 # Run the learning algorithm against the patient and categorize them
 @bp.route("/patient/analyze", methods=['POST'])
-def analyze_patient(patient_json):
-    return {
-        "Patient JSON posted to learning algorithm"
-    }
+def analyze_patient():
+    return "Patient JSON posted to learning algorithm"
 
 # Get all updated cohorts
 @bp.route("/patient/cohorts")
