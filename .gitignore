@@ -2,3 +2,5 @@
 __pycache__/
 *.lock
 .coverage
+.vscode/
+settings.json
