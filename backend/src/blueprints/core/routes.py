@@ -109,6 +109,7 @@ def cancel_job(job_id):
         "jobId": job.id,
         "status": "CANCELLED",
         "dateCreated": job.date_created
+    }
       
 # Run the learning algorithm against the patient and categorize them
 @bp.route("/patient/analyze", methods=['POST'])
