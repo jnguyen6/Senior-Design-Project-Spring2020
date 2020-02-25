@@ -1,9 +1,7 @@
 FROM python:3.7
 
 ENV PYTHONDONTWRITEBYTECODE 1
-ENV FLASK_APP "src/app.py"
-ENV DATABASE_URL "postgresql://admin:Password1!@localhost/backend"
-ENV FLASK_ENV "development"
+# ENV DATABASE_URL "postgresql://admin:Password1!@localhost/backend"
 ENV FLASK_DEBUG True
 
 RUN mkdir /app
@@ -16,7 +14,3 @@ RUN pip install --upgrade pip && \
     pipenv install --dev --system --deploy --ignore-pipfile
 
 ADD . /app
-
-EXPOSE 5000
-
-CMD flask run --host=0.0.0.0
