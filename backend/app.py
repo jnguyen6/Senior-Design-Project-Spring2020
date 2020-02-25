@@ -4,8 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'postgresql://admin:Password1!@db:5432/backend')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'postgresql://admin:Password1!@localhost/backend')
 
 db = SQLAlchemy(app)
 
@@ -17,3 +17,6 @@ def create_tables():
 
 from src.blueprints.core import bp as bp_core
 bp_core.config(app)
+
+from src.blueprints.views import bp as bp_views
+bp_views.config(app)
