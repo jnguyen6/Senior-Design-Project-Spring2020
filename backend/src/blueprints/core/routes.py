@@ -5,8 +5,16 @@ from app import db
 from src.models.Cohort import Cohort
 import json
 
+# Converts the object into a JSON format to be sent as part a response message
 def build_json_response(obj):
     return Response(obj, content_type='application/json')
+
+# Returns the usage information for filtering the job queue
+def usage_info_filter():
+    usage_info = "Invalid argument. To filter the list of jobs in the job queue,"
+    usage_info += " provide the following information in the GET request url:\n"
+    usage_info += "/jobs?filter=[NOT_STARTED] | [IN_PROGRESS] | [DONE] | [CANCELED]"
+    return usage_info
 
 @bp.route("/")
 def hello_world():
@@ -42,7 +50,7 @@ def create_job():
     elif newQueueJob.status is 2:
         status = "DONE"
     elif newQueueJob.status is 3:
-        status = "CANCELLED"
+        status = "CANCELED"
 
     return {
         "jobId": newQueueJob.id,
@@ -65,7 +73,7 @@ def get_job(job_id):
     elif job.status is 2:
         status = "DONE"
     elif job.status is 3:
-        status = "CANCELLED"
+        status = "CANCELED"
 
     return {
         "jobId": job.id,
@@ -77,8 +85,35 @@ def get_job(job_id):
 @bp.route("/jobs")
 def get_jobs():
     from src.models.QueueJob import QueueJob
-    jobs = QueueJob.query.all()
-    jobList = []
+    job_filter = request.args
+    # The list of jobs either filtered by status or not filtered at all
+    jobs = []
+    # The list of job dictionaries that will be sent as part of a response message
+    jobDictList = []
+
+    # If no arguments are provided with the url, then retrieve the list of all the jobs
+    # in the database
+    if len(job_filter) is 0:
+        jobs = QueueJob.query.all()
+    else:
+        # If the number of arguments provided is not 1, then return a usage message
+        if len(job_filter) > 1:
+            usage_info_filter()
+        # Otherwise, check if the correct argument is given, and filter the list of jobs
+        # accordingly
+        if str(job_filter['filter']) == "NOT_STARTED":
+            jobs = QueueJob.query.filter(QueueJob.status == 0)
+        elif str(job_filter['filter']) == "IN_PROGRESS":
+            jobs = QueueJob.query.filter(QueueJob.status == 1)
+        elif str(job_filter['filter']) == "DONE":
+            jobs = QueueJob.query.filter(QueueJob.status == 2)
+        elif str(job_filter['filter']) == "CANCELED":
+            jobs = QueueJob.query.filter(QueueJob.status == 3)
+        else:
+            usage_info_filter()
+
+    # After retrieving all of the requested jobs from the database, convert the jobs into a
+    # a list of dictionaries before sending the list as a response message
     for job in jobs:
         jobDict = dict()
         jobDict['jobId'] = job.id
@@ -89,10 +124,11 @@ def get_jobs():
         elif job.status is 2:
             jobDict['status'] = "DONE"
         elif job.status is 3:
-            jobDict['status'] = "CANCELLED"
+            jobDict['status'] = "CANCELED"
         jobDict['dateCreated'] = job.date_created
-        jobList.append(jobDict)
-    return build_json_response(json.dumps(jobList, default=str))
+        jobDictList.append(jobDict)
+
+    return build_json_response(json.dumps(jobDictList, default=str))
 
 # Cancel a job that is not currently running
 @bp.route("/jobs/cancel/<int:job_id>", methods=['PATCH'])
@@ -107,7 +143,7 @@ def cancel_job(job_id):
 
     return {
         "jobId": job.id,
-        "status": "CANCELLED",
+        "status": "CANCELED",
         "dateCreated": job.date_created
     }
       
