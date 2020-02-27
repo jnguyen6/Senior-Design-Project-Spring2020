@@ -5,8 +5,8 @@ from app import db
 from src.models.QueueJob import QueueJob
 
 # show the landing page view when accessing the app
-@bp.route("/view")
-def hello_world():
+@bp.route("/")
+def index():
     return render_template('index.html')
 
 # Retrieve a list of jobs currently in the job queue database
@@ -18,7 +18,7 @@ def get_jobs():
         jobDict = dict()
         jobDict['job ID'] = job.id
         jobDict['status'] = get_status(job.status)
-        jobDict['date created'] = job.date_created
+        jobDict['date created'] = get_pretty_date(job.date_created)
         jobList.append(jobDict)
     return render_template('table.html', jobs=jobList)
 
@@ -31,3 +31,7 @@ def get_status(key):
         return "DONE"
     elif key is 3:
         return "CANCELED"
+
+def get_pretty_date(oldDate):
+
+    return oldDate.strftime("%d %b %Y at %H:%M")
