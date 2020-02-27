@@ -16,10 +16,6 @@ def usage_info_filter():
     usage_info += "/jobs?filter=[NOT_STARTED] | [IN_PROGRESS] | [DONE] | [CANCELED]"
     return usage_info
 
-@bp.route("/")
-def hello_world():
-    return "Hello World"
-
 @bp.route('/info', methods=["GET"])
 def info_view():
     # Return list of routes
@@ -146,7 +142,7 @@ def cancel_job(job_id):
         "status": "CANCELED",
         "dateCreated": job.date_created
     }
-      
+
 # Run the learning algorithm against the patient and categorize them
 @bp.route("/patient/analyze", methods=['POST'])
 def analyze_patient():
