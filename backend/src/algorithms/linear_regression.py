@@ -11,8 +11,8 @@ def multiLinearRegression(yList, x1List, x2List):
     ySize = len(yList)
     x1Size = len(x1List)
     x2Size = len(x2List)
-    sumX1Sqrt = 0
-    sumX2Sqrt = 0
+    sumX1Product = 0
+    sumX2Product = 0
     sumX1X2 = 0
     sumX1Y = 0
     sumX2Y = 0
@@ -22,14 +22,33 @@ def multiLinearRegression(yList, x1List, x2List):
         yTotal += yList[index]
         x1Total += x1List[index]
         x2Total += x2List[index]
-        sumX1Sqrt += math.sqrt(x1List[index])
-        sumX2Sqrt += math.sqrt(x2List[index])
+        sumX1Product += math.pow(x1List[index], 2)
+        sumX2Product += math.pow(x2List[index], 2)
         sumX1X2 = x1List[index] * x2List[index]
         sumX1Y = x1List[index] * yList[index]
         sumX2Y = x2List[index] * yList[index]
-        index += index
-    denominator = sumX1Sqrt * sumX2Sqrt - math.sqrt(sumX1X2)
-    b1 = (sumX2Sqrt * sumX1Y - sumX1X2 * sumX2Y) / denominator
-    b2 = (sumX1Sqrt * sumX2Y - sumX1X2 * sumX1Y) / denominator
+        index += 1
+    denominator = sumX1Product * sumX2Product - math.pow(sumX1X2, 2)
+    b1 = (sumX2Product * sumX1Y - sumX1X2 * sumX2Y) / denominator
+    b2 = (sumX1Product * sumX2Y - sumX1X2 * sumX1Y) / denominator
     b0 = (yTotal / ySize) - b1 * (x1Total / x1Size) - b2 * (x2Total / x2Size)
     return [b0, b1, b2]
+
+
+def printFunction(list):
+    b0 = list[0]
+    b1 = list[1]
+    b2 = list[2]
+
+    print(b0, b1, b2, sep = ' ')
+
+
+def main():
+    yList = [1,2,3]
+    x1List = [1,2,3]
+    x2List = [1,2,3]
+    printFunction(multiLinearRegression(yList, x1List, x2List))
+
+
+if __name__ == '__main__':
+    main()
