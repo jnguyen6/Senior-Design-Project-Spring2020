@@ -11,6 +11,6 @@ COPY Pip* /app/
 
 RUN pip install --upgrade pip && \
     pip install pipenv && \
-    pipenv install --dev --system --deploy --ignore-pipfile
+    pipenv install
 
 ADD . /app
