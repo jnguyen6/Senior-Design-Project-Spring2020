@@ -139,7 +139,7 @@ def cancel_job(job_id):
 
     return {
         "jobId": job.id,
-        "status": "CANCELED",
+        "status": 3,
         "dateCreated": job.date_created
     }
 
@@ -161,4 +161,5 @@ def get_cohorts():
         chtDict['email'] = cht.email
         chtList.append(chtDict)
     return build_json_response(json.dumps(chtList, default=str))
+
 
