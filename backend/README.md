@@ -28,10 +28,11 @@
 4. End process with `Ctrl+C`
 ## Build and Run with Docker
 1. Ensure that Docker is installed by running `docker -v`
-2. Run in shell `docker build -t patient_pay_backend .`
-3. Run in shell `docker run -d -p 5000:5000 patient_pay_backend`
-4. Ensure that process is running by `docker ps`
-5. To kill, run `docker kill <CONTAINER_ID>` (found by `docker ps`)
+2. Ensure that you are in the rood directory of the Git Repo (not the backend directory)
+3. Run in shell `docker-compose build`
+4. Run in shell `docker-compose up -d`
+5. Ensure that process is running by `docker ps`. There should be 2 running containers
+6. To kill, run `docker-compose down`
 ## Testing
 ### Run Unit Tests
 1. Run in shell `pytest`
