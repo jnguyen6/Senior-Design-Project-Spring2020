@@ -1,0 +1,52 @@
+<html>
+    <head>
+        <title>List of Jobs</title>
+        <link rel= "stylesheet" type= "text/css" href= "/static/style.css" media="all">
+        <script type=text/javascript src="/static/table.js"></script>
+    </head>
+
+    <body>
+        <h1>Jobs</h1>
+
+        <div>
+            <button onclick="queueJob()">Queue a job</button>
+        </div>
+
+        <table id="jobTable">
+            <tr>
+                {% set ns = namespace(idx=0) %}
+                {% for key,value in jobs[0].items() %}
+                <th onclick="sortTable({{ns.idx}})">{{ key }}</th>
+                {% set ns.idx = ns.idx + 1 %}
+                {% endfor %}
+                <th>cancel?</th>
+            </tr>
+                {% for job in jobs %}
+                <tr>
+                    {% set ns = namespace(status=false, id=-1) %}
+                    {% for key,value in job.items() %}
+
+                        {% if key == "status" and value == "NOT STARTED" %}
+                            {% set ns.status = true %}
+                        {% elif key == "job ID" %}
+                            {% set ns.id = value %}
+                        {% endif %}
+
+                        {% if key == "date created" %}
+                        <td>{{ value }}</td>
+                        {% else %}
+                        <td>{{ value }}</td>
+                        {% endif %}
+
+                    {% endfor %}
+                    {% if ns.status %}
+                    <td><button onclick="cancelJob({{ns.id}})">cancel</button></td>
+                        {% set ns.status = false %}
+                    {% else %}
+                        <td><button disabled>cancel</button></td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+        </table>
+    </body>
+</html>
