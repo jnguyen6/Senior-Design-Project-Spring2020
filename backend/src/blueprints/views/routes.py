@@ -25,7 +25,7 @@ def get_jobs():
 
 def get_status(key):
 
-    return QueueStatus(key).name
+    return QueueStatus(key).name.replace('_', ' ')
 
 def get_pretty_date(oldDate):
 

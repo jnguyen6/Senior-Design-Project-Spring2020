@@ -32,11 +32,7 @@
                             {% set ns.id = value %}
                         {% endif %}
 
-                        {% if key == "date created" %}
                         <td>{{ value }}</td>
-                        {% else %}
-                        <td>{{ value }}</td>
-                        {% endif %}
 
                     {% endfor %}
                     {% if ns.status %}
