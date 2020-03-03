@@ -2,6 +2,7 @@
 __pycache__/
 *.lock
 .coverage
+settings.json
 *.idea/
 *venv/
 .vscode/
