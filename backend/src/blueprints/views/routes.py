@@ -3,6 +3,7 @@ from flask import request
 from flask import render_template
 from app import db
 from src.models.QueueJob import QueueJob
+from src.models.QueueStatus import QueueStatus
 
 # show the landing page view when accessing the app
 @bp.route("/")
@@ -23,14 +24,8 @@ def get_jobs():
     return render_template('table.html', jobs=jobList)
 
 def get_status(key):
-    if key is 0:
-       return "NOT STARTED"
-    elif key is 1:
-        return "IN PROGRESS"
-    elif key is 2:
-        return "DONE"
-    elif key is 3:
-        return "CANCELED"
+
+    return QueueStatus(key).name
 
 def get_pretty_date(oldDate):
 
