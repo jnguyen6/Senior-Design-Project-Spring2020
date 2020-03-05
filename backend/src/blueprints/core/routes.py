@@ -33,25 +33,19 @@ def info_view():
 @bp.route("/jobs", methods=['POST'])
 def create_job():
     from src.models.QueueJob import QueueJob
-    newQueueJob = QueueJob()
-    db.session.add(newQueueJob)
+    new_queue_job = QueueJob()
+    db.session.add(new_queue_job)
     db.session.commit()
 
     # Check the current status of the newly created job
     status = ""
-    if newQueueJob.status is 0:
+    if new_queue_job.status is 0:
         status = "NOT_STARTED"
-    elif newQueueJob.status is 1:
-        status = "IN_PROGRESS"
-    elif newQueueJob.status is 2:
-        status = "DONE"
-    elif newQueueJob.status is 3:
-        status = "CANCELED"
 
     return {
-        "jobId": newQueueJob.id,
+        "jobId": new_queue_job.id,
         "status": status,
-        "dateCreated": newQueueJob.date_created
+        "dateCreated": new_queue_job.date_created
     }
 
 # Retrieve a learning job from the job queue database by id

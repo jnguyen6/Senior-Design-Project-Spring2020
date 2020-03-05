@@ -6,6 +6,13 @@ from src.models.QueueJob import QueueStatus
 def queue_shape():
     return dict(jobId=0, status="", dateCreated="").keys()
 
+def test_info_view(client):
+    resp = client.get('/info')
+    assert resp.status_code == 200
+
+    body = json.loads(resp.data)
+    assert len(body.keys()) == 6
+
 def test_create_job(client, queue_shape):
     resp = client.post('/jobs')
     assert resp.status_code == 200
