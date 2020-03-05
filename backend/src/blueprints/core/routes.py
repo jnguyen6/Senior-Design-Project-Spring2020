@@ -5,6 +5,16 @@ from app import db
 from src.models.Cohort import Cohort
 import json
 
+def get_status_string(status_int):
+    if status_int is 0:
+        return "NOT_STARTED"
+    elif status_int is 1:
+        return "IN_PROGRESS"
+    elif status_int is 2:
+        return "DONE"
+    elif status_int is 3:
+        return "CANCELED"
+
 # Converts the object into a JSON format to be sent as part a response message
 def build_json_response(obj):
     return Response(obj, content_type='application/json')
@@ -55,15 +65,7 @@ def get_job(job_id):
     job = QueueJob.query.get(job_id)
 
     # Check the current status of the newly created job
-    status = ""
-    if job.status is 0:
-        status = "NOT_STARTED"
-    elif job.status is 1:
-        status = "IN_PROGRESS"
-    elif job.status is 2:
-        status = "DONE"
-    elif job.status is 3:
-        status = "CANCELED"
+    status = get_status_string(job.status)
 
     return {
         "jobId": job.id,
@@ -88,7 +90,7 @@ def get_jobs():
     else:
         # If the number of arguments provided is not 1, then return a usage message
         if len(job_filter) > 1:
-            usage_info_filter()
+            return Response(usage_info_filter(), status=400)
         # Otherwise, check if the correct argument is given, and filter the list of jobs
         # accordingly
         if str(job_filter['filter']) == "NOT_STARTED":
@@ -100,21 +102,14 @@ def get_jobs():
         elif str(job_filter['filter']) == "CANCELED":
             jobs = QueueJob.query.filter(QueueJob.status == 3)
         else:
-            usage_info_filter()
+            return Response(usage_info_filter(), status=400)
 
     # After retrieving all of the requested jobs from the database, convert the jobs into a
     # a list of dictionaries before sending the list as a response message
     for job in jobs:
         jobDict = dict()
         jobDict['jobId'] = job.id
-        if job.status is 0:
-            jobDict['status'] = "NOT_STARTED"
-        elif job.status is 1:
-            jobDict['status'] = "IN_PROGRESS"
-        elif job.status is 2:
-            jobDict['status'] = "DONE"
-        elif job.status is 3:
-            jobDict['status'] = "CANCELED"
+        jobDict['status'] = get_status_string(job.status)
         jobDict['dateCreated'] = job.date_created
         jobDictList.append(jobDict)
 
