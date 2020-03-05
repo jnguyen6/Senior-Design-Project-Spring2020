@@ -13,9 +13,12 @@
         </div>
 
         <table id="jobTable">
+
+            {% if jobs|length > 0 %}
+
             <tr>
                 {% set ns = namespace(idx=0) %}
-                {% for key,value in jobs[0].items() %}
+                {% for key in jobs[0].keys() %}
                 <th onclick="sortTable({{ns.idx}})">{{ key }}</th>
                 {% set ns.idx = ns.idx + 1 %}
                 {% endfor %}
@@ -32,11 +35,7 @@
                             {% set ns.id = value %}
                         {% endif %}
 
-                        {% if key == "date created" %}
                         <td>{{ value }}</td>
-                        {% else %}
-                        <td>{{ value }}</td>
-                        {% endif %}
 
                     {% endfor %}
                     {% if ns.status %}
@@ -47,6 +46,9 @@
                     {% endif %}
                 </tr>
                 {% endfor %}
+            {% else %}
+                <p>no jobs</p>
+            {% endif %}
         </table>
     </body>
 </html>

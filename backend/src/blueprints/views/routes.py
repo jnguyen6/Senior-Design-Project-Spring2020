@@ -2,6 +2,7 @@ from src.blueprints.views.bp import bp
 from flask import request
 from flask import render_template
 from app import db
+# from pytz import timezone
 from src.models.QueueJob import QueueJob
 from src.models.QueueStatus import QueueStatus
 
@@ -25,8 +26,8 @@ def get_jobs():
 
 def get_status(key):
 
-    return QueueStatus(key).name
+    return QueueStatus(key).name.replace('_', ' ')
 
 def get_pretty_date(oldDate):
-
+    # newDate = timezone("US/Eastern").localize(oldDate)
     return oldDate.strftime("%d %b %Y at %H:%M")
