@@ -11,6 +11,8 @@ psycopg2-binary = "*"
 numpy = "*"
 matplotlib = "*"
 executor = "*"
+scikit-learn = "*"
+pandas = "*"
 
 [requires]
 python_version = "3.7"

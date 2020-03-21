@@ -146,20 +146,34 @@ def cancel_job(job_id):
 # Run the learning algorithm against the patient and categorize them
 @bp.route("/patient/analyze", methods=['POST'])
 def analyze_patient():
+    #TODO add flag that won't let it run if not updated list of cohorts
     return "Patient JSON posted to learning algorithm"
 
 # Get all updated cohorts
 @bp.route("/patient/cohorts")
 def get_cohorts():
+    #TODO add database flag so that this can update status as retrieved
     cohorts = Cohort.query.all()
-    chtList = []
-    for cht in cohorts:
-        chtDict = dict()
-        chtDict['cohortId'] = cht.cid
-        chtDict['paper'] = cht.paper
-        chtDict['text'] = cht.text
-        chtDict['email'] = cht.email
-        chtList.append(chtDict)
-    return build_json_response(json.dumps(chtList, default=str))
+    
+    condensedCohorts = createCohortList(cohorts)
+    return build_json_response(json.dumps(condensedCohorts, default=str))
 
+"""
+Helper function for returning cohorts
+Finds all unique cycles and the returns them as a list of dictionaries
+Dict has cycle length attributes
+"""
+def createCohortList(cohorts):
+    condensedCohorts = set()
+    for coh in cohorts:
+        condensedCohorts.add(coh.cid)
 
+    structuredResponse = []
+    for coh in condensedCohorts:
+        newdict = dict()
+        newdict['cohortId'] = coh.cid
+        newdict['paper'] = coh.paper
+        newdict['text'] = coh.text
+        newdict['email'] = coh.email
+        structuredResponse.append(newdict)
+    return structuredResponse

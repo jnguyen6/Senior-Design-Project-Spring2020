@@ -1,10 +1,20 @@
 from app import db
 
 class Cohort(db.Model):
-    cid = db.Column(db.Integer, primary_key=True)
-    paper = db.Column(db.String(30), unique=True, nullable=False)
-    text = db.Column(db.String(30), unique=True, nullable=False)
-    email = db.Column(db.String(30), unique=True, nullable=False)
+    uid = db.Column(db.Integer, primary_key=True)
+
+    cid = db.Column(db.Integer)
+    paper = db.Column(db.Integer)
+    text = db.Column(db.Integer)
+    email = db.Column(db.Integer)
+
+    ageMin = db.Column(db.Integer)
+    ageMax = db.Column(db.Integer)
+    gender = db.Column(db.String(1), nullable=False)
+    incomeMin = db.Column(db.Integer)
+    incomeMax = db.Column(db.Integer)
+    billAmountMin = db.Column(db.Integer)
+    billAmountMax = db.Column(db.Integer)
 
     def __repr__(self):
-        return f'<Cohort cid={self.cid} paper={self.paper} text={self.text} email={self.email}'
+        return f'<Unique Id ={self.uid} Cohort cid={self.cid} Age range={self.ageMax}-{self.ageMax} Gender={self.gender} Income Range={self.incomeMin}-{self.incomeMax} Bill range={self.billAmountMin}-{self.billAmountMax}'
