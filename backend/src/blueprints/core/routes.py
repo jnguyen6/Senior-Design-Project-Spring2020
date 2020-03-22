@@ -162,4 +162,21 @@ def get_cohorts():
         chtList.append(chtDict)
     return build_json_response(json.dumps(chtList, default=str))
 
+# Enter a new created cohort into DB (for initializing the cohorts for further use)
+@bp.route("/patient/cohorts/<int:cid> <int:paper> <int:text> <int:email>", methods=['POST'])
+def create_cohort(cid, paper, text, email):
+    newCohort = Cohort()
+    newCohort.cid = cid
+    newCohort.paper = paper
+    newCohort.text = text
+    newCohort.email = email
+    db.session.add(newCohort)
+    db.session.commit()
+
+    return {
+        "cohortId": newCohort.cid,
+        "freqPaper": newCohort.paper,
+        "freqText": newCohort.text,
+        "freqEmail": newCohort.email
+    }
 
