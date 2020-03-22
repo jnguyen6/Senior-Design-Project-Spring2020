@@ -74,7 +74,7 @@ def analyzePatient(age, income, gender, bill_amount, cons, maxCom, b0List, b1Lis
 
 # match the optimal cohort for a certain patient
 # optOutList contains strings of methods that the patient does not want to receive, may include "email","text" and/or "paper"
-def matchOptimalCohort(numEmails, numMails, numTexts, optOutList, cohortList):
+def matchOptimalCohort(age, gender, income, billAmount, numEmails, numMails, numTexts, optOutList, cohortList):
     # filter out cohorts containing methods of opt-out
     for c in cohortList:
         if ("email" in optOutList and c.email != 0):
@@ -88,7 +88,8 @@ def matchOptimalCohort(numEmails, numMails, numTexts, optOutList, cohortList):
     pastDiffValue = 9999
     for cht in cohortList:
         diffValue = abs(numEmails - cht.email) + abs(numMails - cht.paper) + abs(numTexts - cht.text)
-        if (diffValue < pastDiffValue):
+        if (diffValue < pastDiffValue and age < cht.ageMax and age > cht.ageMin and gender == cht.gender and income < cht.incomeMax
+        and income > cht.incomeMin and billAmount > cht.billAmountMin and billAmount < cht.billAmountMax):
             cid = cht.cid
             pastDiffValue = diffValue
     return cid
