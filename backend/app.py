@@ -15,6 +15,15 @@ from src.models import QueueJob, Cohort
 def create_tables():
     db.create_all()
 
+"""
+Populate buckets of cohorts
+#TODO need clarification on if tables need to be created on startup always
+Seems like they would not
+"""
+#@app.before_first_request
+def populateCohorts():
+    None
+
 from src.blueprints.core import bp as bp_core
 bp_core.config(app)
 

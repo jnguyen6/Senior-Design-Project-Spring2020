@@ -4,6 +4,7 @@ from flask import jsonify, Response
 from app import db
 from src.models.Cohort import Cohort
 import json
+from src.algorithms.categorize import categorizeFromBuckets
 
 # Converts the object into a JSON format to be sent as part a response message
 def build_json_response(obj):
@@ -147,7 +148,15 @@ def cancel_job(job_id):
 @bp.route("/patient/analyze", methods=['POST'])
 def analyze_patient():
     #TODO add flag that won't let it run if not updated list of cohorts
-    return "Patient JSON posted to learning algorithm"
+    patient = request.get_json()
+
+    patId = patient['id']
+    cid = categorizeFromBuckets(patient)    
+
+    return {
+        "cid": cid,
+        "patient": patId
+    }
 
 # Get all updated cohorts
 @bp.route("/patient/cohorts")
