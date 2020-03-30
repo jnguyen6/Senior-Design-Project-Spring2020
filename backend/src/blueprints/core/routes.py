@@ -3,6 +3,7 @@ from flask import request
 from flask import jsonify, Response
 from app import db
 from src.models.Cohort import Cohort
+from src.models.Communication import Communication
 import json
 
 # Converts the object into a JSON format to be sent as part a response message
@@ -180,3 +181,35 @@ def create_cohort(cid, paper, text, email):
         "freqEmail": newCohort.email
     }
 
+# Create and enter a new communication into DB
+@bp.route("/communications/<string:account_id>,<string:notification_date_time>,<string:method>,<string:notification_type>", methods=['POST'])
+def create_communication(account_id, notification_date_time, method, notification_type):
+    newCom = Communication()
+    newCom.accountId = account_id
+    newCom.notification_date_time = notification_date_time
+    newCom.method = method
+    newCom.notification_type = notification_type
+    db.session.add(newCom)
+    db.session.commit()
+
+    return {
+        "Account ID": newCom.accountId,
+        "Notification Date Time": newCom.notification_date_time,
+        "Delivery Method": newCom.method,
+        "Notification Type": newCom.notification_type
+    }
+"""
+# Get all current communications from DB
+@bp.route("/communications")
+def get_all_communications():
+    coms = Communication.query.all()
+    comList = []
+    for com in coms:
+        comDict = dict()
+        comDict['accountId'] = com.accountId
+        comDict['notification_date_time'] = com.notification_date_time
+        comDict['method'] = com.method
+        comDict['notification_type'] = com.notification_type
+        comList.append(comDict)
+        return build_json_response(json.dumps(comList, default=str))
+"""
