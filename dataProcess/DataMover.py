@@ -38,7 +38,8 @@ def moveData():
                 notification_date_time = row[1]
                 method = row[2]
                 notification_type = row[3]
-                r = requests.post("http://127.0.0.1:5000/communications/" + account_id + "," + notification_date_time + "," + method + "," + notification_type, headers=header_content, verify=False)
+                uidStr = str(clineCount)
+                r = requests.post("http://127.0.0.1:5000/communications/" + uidStr + "," + account_id + "," + notification_date_time + "," + method + "," + notification_type, headers=header_content, verify=False)
                 print(r.status_code)
                 clineCount += 1
     return

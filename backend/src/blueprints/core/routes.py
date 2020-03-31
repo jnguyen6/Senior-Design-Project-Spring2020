@@ -182,9 +182,10 @@ def create_cohort(cid, paper, text, email):
     }
 
 # Create and enter a new communication into DB
-@bp.route("/communications/<string:account_id>,<string:notification_date_time>,<string:method>,<string:notification_type>", methods=['POST'])
-def create_communication(account_id, notification_date_time, method, notification_type):
+@bp.route("/communications/<int:uid>,<int:account_id>,<string:notification_date_time>,<string:method>,<string:notification_type>", methods=['POST'])
+def create_communication(uid, account_id, notification_date_time, method, notification_type):
     newCom = Communication()
+    newCom.uid = uid
     newCom.accountId = account_id
     newCom.notification_date_time = notification_date_time
     newCom.method = method
@@ -193,6 +194,7 @@ def create_communication(account_id, notification_date_time, method, notificatio
     db.session.commit()
 
     return {
+        "Unique ID": newCom.uid,
         "Account ID": newCom.accountId,
         "Notification Date Time": newCom.notification_date_time,
         "Delivery Method": newCom.method,
