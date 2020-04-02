@@ -4,6 +4,7 @@ from flask import jsonify, Response
 from app import db
 from src.models.Cohort import Cohort
 from src.models.Communication import Communication
+from src.models.WebActivity import WebActivity
 import json
 
 # Converts the object into a JSON format to be sent as part a response message
@@ -200,6 +201,7 @@ def create_communication(uid, account_id, notification_date_time, method, notifi
         "Delivery Method": newCom.method,
         "Notification Type": newCom.notification_type
     }
+
 """
 # Get all current communications from DB
 @bp.route("/communications")
@@ -208,6 +210,7 @@ def get_all_communications():
     comList = []
     for com in coms:
         comDict = dict()
+        comDict['uid'] = com.uid
         comDict['accountId'] = com.accountId
         comDict['notification_date_time'] = com.notification_date_time
         comDict['method'] = com.method
@@ -215,3 +218,24 @@ def get_all_communications():
         comList.append(comDict)
         return build_json_response(json.dumps(comList, default=str))
 """
+
+# Create and enter new web activity to DB
+@bp.route("/web activities/<int:uid>,<int:account_id>,<int:event_id>,<string:bill_status>,<string:action_date>", methods=['POST'])
+def create_web_activity(uid, account_id, event_id, bill_status, action_date):
+    newWebActivity = WebActivity()
+    newWebActivity.uid = uid
+    newWebActivity.accountId = account_id
+    newWebActivity.eventId = event_id
+    newWebActivity.billStatus = bill_status
+    newWebActivity.actionDate = action_date
+    db.session.add(newWebActivity)
+    db.session.commit()
+
+    return {
+        "Unique ID": newWebActivity.uid,
+        "Account ID": newWebActivity.accountId,
+        "Event ID": newWebActivity.eventId,
+        "Bill Status": newWebActivity.billStatus,
+        "Action Date": newWebActivity.actionDate
+    }
+

@@ -42,29 +42,30 @@ def moveData():
                 r = requests.post("http://127.0.0.1:5000/communications/" + uidStr + "," + account_id + "," + notification_date_time + "," + method + "," + notification_type, headers=header_content, verify=False)
                 print(r.status_code)
                 clineCount += 1
-    return
+    #return
 
-"""
-    rel_path = r'\SponsorDataSets\website activity.csv'
+    rel_path = '\SponsorDataSets\website activity.csv'
     webPath = absolutePath + rel_path
     with open(webPath, newline='') as csvfile:
-        patientReader = csv.reader(csvfile, delimiter=',', quotechar='|')
-        next(patientReader)
-        for row in patientReader:
-            newAct = activity(row[1], row[2], row[3])
-            if newAct.eventID == '7':
-                patientDict[row[0]].activities.append(newAct)
-                day = newAct.date[:10]
+        webReader = csv.reader(csvfile, delimiter=',', quotechar='|')
+        wlineCount = 0
 
-                if day not in patientDict[row[0]].firstActInDay.keys():
-                    patientDict[row[0]].firstActInDay[day] = newAct
-
-                if patientDict[row[0]].login == False:
-                    patientDict[row[0]].login = True
-                    successDict[patientDict[row[0]]] = patientDict[row[0]]
+        for row in webReader:
+            if wlineCount == 0:
+                wlineCount += 1
+            else:
+                header_content = {'Content-type': 'application/json'}
+                account_id = row[0]
+                event_id = row[1]
+                bill_status = row[2]
+                action_date = row[3]
+                uid = str(wlineCount)
+                r = requests.post("http://127.0.0.1:5000/web activities/" + uid + "," + account_id + "," + event_id + "," + bill_status + "," + action_date, headers=header_content, verify=False)
+                print(r.status_code)
+                wlineCount += 1
 
         return
-        """
+
 
 """
 Main function of program
