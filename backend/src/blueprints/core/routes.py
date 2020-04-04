@@ -3,6 +3,9 @@ from flask import request
 from flask import jsonify, Response
 from app import db
 from src.models.Cohort import Cohort
+from src.models.Communication import Communication
+from src.models.WebActivity import WebActivity
+from src.models.Patient import Patient
 import json
 
 # Converts the object into a JSON format to be sent as part a response message
@@ -148,6 +151,27 @@ def cancel_job(job_id):
 def analyze_patient():
     return "Patient JSON posted to learning algorithm"
 
+# Create and enter a new patient into DB
+@bp.route("/patients/<int:account_id>,<string:gender>,<int:birth_year>,<string:address_zip>,<int:family_income>,<int:bill_amount>", methods=['POST'])
+def create_patient(account_id, gender, birth_year, address_zip, family_income, bill_amount):
+    newPatient = Patient()
+    newPatient.accountId = account_id
+    newPatient.gender = gender
+    newPatient.birth_year = birth_year
+    newPatient.address_zip = address_zip
+    newPatient.family_income = family_income
+    newPatient.bill_amount = bill_amount
+    db.session.add(newPatient)
+    db.session.commit()
+    return {
+        "Account ID": newPatient.accountId,
+        "Gender": newPatient.gender,
+        "Birth Year": newPatient.birth_year,
+        "Address Zip": newPatient.address_zip,
+        "Family Income": newPatient.family_income,
+        "Bill Amount": newPatient.bill_amount
+    }
+
 # Get all updated cohorts
 @bp.route("/patient/cohorts")
 def get_cohorts():
@@ -162,4 +186,78 @@ def get_cohorts():
         chtList.append(chtDict)
     return build_json_response(json.dumps(chtList, default=str))
 
+# Enter a new created cohort into DB (for initializing the cohorts for further use)
+@bp.route("/patient/cohorts/<int:cid> <int:paper> <int:text> <int:email>", methods=['POST'])
+def create_cohort(cid, paper, text, email):
+    newCohort = Cohort()
+    newCohort.cid = cid
+    newCohort.paper = paper
+    newCohort.text = text
+    newCohort.email = email
+    db.session.add(newCohort)
+    db.session.commit()
+
+    return {
+        "cohortId": newCohort.cid,
+        "freqPaper": newCohort.paper,
+        "freqText": newCohort.text,
+        "freqEmail": newCohort.email
+    }
+
+# Create and enter a new communication into DB
+@bp.route("/communications/<int:uid>,<int:account_id>,<string:notification_date_time>,<string:method>,<string:notification_type>", methods=['POST'])
+def create_communication(uid, account_id, notification_date_time, method, notification_type):
+    newCom = Communication()
+    newCom.uid = uid
+    newCom.accountId = account_id
+    newCom.notification_date_time = notification_date_time
+    newCom.method = method
+    newCom.notification_type = notification_type
+    db.session.add(newCom)
+    db.session.commit()
+
+    return {
+        "Unique ID": newCom.uid,
+        "Account ID": newCom.accountId,
+        "Notification Date Time": newCom.notification_date_time,
+        "Delivery Method": newCom.method,
+        "Notification Type": newCom.notification_type
+    }
+
+"""
+# Get all current communications from DB
+@bp.route("/communications")
+def get_all_communications():
+    coms = Communication.query.all()
+    comList = []
+    for com in coms:
+        comDict = dict()
+        comDict['uid'] = com.uid
+        comDict['accountId'] = com.accountId
+        comDict['notification_date_time'] = com.notification_date_time
+        comDict['method'] = com.method
+        comDict['notification_type'] = com.notification_type
+        comList.append(comDict)
+        return build_json_response(json.dumps(comList, default=str))
+"""
+
+# Create and enter new web activity to DB
+@bp.route("/web activities/<int:uid>,<int:account_id>,<int:event_id>,<string:bill_status>,<string:action_date>", methods=['POST'])
+def create_web_activity(uid, account_id, event_id, bill_status, action_date):
+    newWebActivity = WebActivity()
+    newWebActivity.uid = uid
+    newWebActivity.accountId = account_id
+    newWebActivity.eventId = event_id
+    newWebActivity.billStatus = bill_status
+    newWebActivity.actionDate = action_date
+    db.session.add(newWebActivity)
+    db.session.commit()
+
+    return {
+        "Unique ID": newWebActivity.uid,
+        "Account ID": newWebActivity.accountId,
+        "Event ID": newWebActivity.eventId,
+        "Bill Status": newWebActivity.billStatus,
+        "Action Date": newWebActivity.actionDate
+    }
 
