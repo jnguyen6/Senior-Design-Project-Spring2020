@@ -270,3 +270,13 @@ def get_patients_birth_year():
     for patient in patients:
         birthYearList.append(patient.birth_year)
     return build_json_response(json.dumps(birthYearList, default=str))
+
+# Get gender of all patients
+@bp.route("/patients/gender", methods=['GET'])
+def get_patients_gender():
+    from src.models.Patient import Patient
+    patients = Patient.query.all()
+    genderList = []
+    for patient in patients:
+        genderList.append(patient.gender)
+    return build_json_response(json.dumps(genderList, default=str))

@@ -22,6 +22,15 @@ def getAllPatientsAgeInOrder():
     # print(ageList[1])
     return ageList
 
+# Generate a list containing genders of all patients, in order
+def getAllPatientsGenderInOrder():
+    header_content = {'Content-type': 'application/json'}
+    r = requests.get("http://127.0.0.1:5000/patients/gender", headers=header_content, verify=False)
+    genderList = r.json()
+    print(genderList[0])
+    #return genderList
+
 # Main Method only for Testing
 if __name__ == "__main__":
     getAllPatientsAgeInOrder()
+    getAllPatientsGenderInOrder()
