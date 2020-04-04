@@ -261,3 +261,12 @@ def create_web_activity(uid, account_id, event_id, bill_status, action_date):
         "Action Date": newWebActivity.actionDate
     }
 
+# Get birth year of all patients
+@bp.route("/patients/birth_year", methods=['GET'])
+def get_patients_birth_year():
+    from src.models.Patient import Patient
+    patients = Patient.query.all()
+    birthYearList = []
+    for patient in patients:
+        birthYearList.append(patient.birth_year)
+    return build_json_response(json.dumps(birthYearList, default=str))
