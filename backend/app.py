@@ -48,10 +48,12 @@ def populateCohorts():
                     maleCohort = Cohort()
                     maleCohort.initialize(ageMin, ageMax, 'M', incomeMin, incomeMax, billMin, billMax)
                     db.session.add(maleCohort)
+                    db.commit()
 
                     femaleCohort = Cohort()
                     femaleCohort.initialize(ageMin, ageMax, 'F', incomeMin, incomeMax, billMin, billMax)
                     db.session.add(femaleCohort)
+                    db.commit()
 
 from src.blueprints.core import bp as bp_core
 bp_core.config(app)
