@@ -18,3 +18,12 @@ class Cohort(db.Model):
 
     def __repr__(self):
         return f'<Unique Id ={self.uid} Cohort cid={self.cid} Age range={self.ageMax}-{self.ageMax} Gender={self.gender} Income Range={self.incomeMin}-{self.incomeMax} Bill range={self.billAmountMin}-{self.billAmountMax}'
+
+    def initialize(self, ageMin, ageMax, gender, incomeMin, incomeMax, billAmountMin, billAmountMax):
+        self.ageMin = ageMin
+        self.ageMax = ageMax
+        self.gender = gender
+        self.incomeMin = incomeMin
+        self.incomeMax = incomeMax
+        self.billAmountMin = billAmountMin
+        self.billAmountMax = billAmountMax
