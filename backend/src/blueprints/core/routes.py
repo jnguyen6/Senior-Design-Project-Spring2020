@@ -7,6 +7,7 @@ from src.models.Communication import Communication
 from src.models.WebActivity import WebActivity
 from src.models.Patient import Patient
 import json
+from src.algorithms.categorize import categorizeFromBuckets
 
 # Converts the object into a JSON format to be sent as part a response message
 def build_json_response(obj):
@@ -149,7 +150,16 @@ def cancel_job(job_id):
 # Run the learning algorithm against the patient and categorize them
 @bp.route("/patient/analyze", methods=['POST'])
 def analyze_patient():
-    return "Patient JSON posted to learning algorithm"
+    #TODO add flag that won't let it run if not updated list of cohorts
+    patient = request.get_json()
+
+    patId = patient['id']
+    cid = categorizeFromBuckets(patient)    
+
+    return {
+        "cid": cid,
+        "patient": patId
+    }
 
 # Create and enter a new patient into DB
 @bp.route("/patients/<int:account_id>,<string:gender>,<int:birth_year>,<string:address_zip>,<int:family_income>,<int:bill_amount>", methods=['POST'])
@@ -175,16 +185,31 @@ def create_patient(account_id, gender, birth_year, address_zip, family_income, b
 # Get all updated cohorts
 @bp.route("/patient/cohorts")
 def get_cohorts():
+    #TODO add database flag so that this can update status as retrieved
     cohorts = Cohort.query.all()
-    chtList = []
-    for cht in cohorts:
-        chtDict = dict()
-        chtDict['cohortId'] = cht.cid
-        chtDict['paper'] = cht.paper
-        chtDict['text'] = cht.text
-        chtDict['email'] = cht.email
-        chtList.append(chtDict)
-    return build_json_response(json.dumps(chtList, default=str))
+    
+    condensedCohorts = createCohortList(cohorts)
+    return build_json_response(json.dumps(condensedCohorts, default=str))
+  
+"""
+Helper function for returning cohorts
+Finds all unique cycles and the returns them as a list of dictionaries
+Dict has cycle length attributes
+"""
+def createCohortList(cohorts):
+    condensedCohorts = set()
+    for coh in cohorts:
+        condensedCohorts.add(coh.cid)
+
+    structuredResponse = []
+    for coh in condensedCohorts:
+        newdict = dict()
+        newdict['cohortId'] = coh.cid
+        newdict['paper'] = coh.paper
+        newdict['text'] = coh.text
+        newdict['email'] = coh.email
+        structuredResponse.append(newdict)
+    return structuredResponse
 
 # Enter a new created cohort into DB (for initializing the cohorts for further use)
 @bp.route("/patient/cohorts/<int:cid> <int:paper> <int:text> <int:email>", methods=['POST'])

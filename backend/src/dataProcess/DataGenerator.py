@@ -128,7 +128,8 @@ def generateNormalizedPatients(n):
 
 
 """
-Generate Test data sets
+Generate test dat abased on age
+DEPRECATED for now
 """
 def dataGenAgeDemo():
     absolutePath = os.path.abspath(__file__)[:-16]
