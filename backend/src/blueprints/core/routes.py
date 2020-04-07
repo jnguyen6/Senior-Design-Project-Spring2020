@@ -4,7 +4,10 @@ from flask import jsonify, Response
 from app import db
 from src.models.Cohort import Cohort
 from src.models.Communication import Communication
+from src.models.WebActivity import WebActivity
+from src.models.Patient import Patient
 import json
+from src.algorithms.categorize import categorizeFromBuckets
 
 # Converts the object into a JSON format to be sent as part a response message
 def build_json_response(obj):
@@ -147,21 +150,46 @@ def cancel_job(job_id):
 # Run the learning algorithm against the patient and categorize them
 @bp.route("/patient/analyze", methods=['POST'])
 def analyze_patient():
-    return "Patient JSON posted to learning algorithm"
+    #TODO add flag that won't let it run if not updated list of cohorts
+    patient = request.get_json()
+
+    patId = patient['id']
+    cid = categorizeFromBuckets(patient)    
+
+    return {
+        "cid": cid,
+        "patient": patId
+    }
+
+# Create and enter a new patient into DB
+@bp.route("/patients/<int:account_id>,<string:gender>,<int:birth_year>,<string:address_zip>,<int:family_income>,<int:bill_amount>", methods=['POST'])
+def create_patient(account_id, gender, birth_year, address_zip, family_income, bill_amount):
+    newPatient = Patient()
+    newPatient.accountId = account_id
+    newPatient.gender = gender
+    newPatient.birth_year = birth_year
+    newPatient.address_zip = address_zip
+    newPatient.family_income = family_income
+    newPatient.bill_amount = bill_amount
+    db.session.add(newPatient)
+    db.session.commit()
+    return {
+        "Account ID": newPatient.accountId,
+        "Gender": newPatient.gender,
+        "Birth Year": newPatient.birth_year,
+        "Address Zip": newPatient.address_zip,
+        "Family Income": newPatient.family_income,
+        "Bill Amount": newPatient.bill_amount
+    }
 
 # Get all updated cohorts
 @bp.route("/patient/cohorts")
 def get_cohorts():
+    #TODO add database flag so that this can update status as retrieved
     cohorts = Cohort.query.all()
-    chtList = []
-    for cht in cohorts:
-        chtDict = dict()
-        chtDict['cohortId'] = cht.cid
-        chtDict['paper'] = cht.paper
-        chtDict['text'] = cht.text
-        chtDict['email'] = cht.email
-        chtList.append(chtDict)
-    return build_json_response(json.dumps(chtList, default=str))
+    
+    condensedCohorts = createCohortList(cohorts)
+    return build_json_response(json.dumps(condensedCohorts, default=str))
 
 # Enter a new created cohort into DB (for initializing the cohorts for further use)
 @bp.route("/patient/cohorts/<int:cid> <int:paper> <int:text> <int:email>", methods=['POST'])
@@ -200,6 +228,7 @@ def create_communication(uid, account_id, notification_date_time, method, notifi
         "Delivery Method": newCom.method,
         "Notification Type": newCom.notification_type
     }
+
 """
 # Get all current communications from DB
 @bp.route("/communications")
@@ -208,6 +237,7 @@ def get_all_communications():
     comList = []
     for com in coms:
         comDict = dict()
+        comDict['uid'] = com.uid
         comDict['accountId'] = com.accountId
         comDict['notification_date_time'] = com.notification_date_time
         comDict['method'] = com.method
@@ -215,3 +245,45 @@ def get_all_communications():
         comList.append(comDict)
         return build_json_response(json.dumps(comList, default=str))
 """
+
+# Create and enter new web activity to DB
+@bp.route("/web activities/<int:uid>,<int:account_id>,<int:event_id>,<string:bill_status>,<string:action_date>", methods=['POST'])
+def create_web_activity(uid, account_id, event_id, bill_status, action_date):
+    newWebActivity = WebActivity()
+    newWebActivity.uid = uid
+    newWebActivity.accountId = account_id
+    newWebActivity.eventId = event_id
+    newWebActivity.billStatus = bill_status
+    newWebActivity.actionDate = action_date
+    db.session.add(newWebActivity)
+    db.session.commit()
+
+    return {
+        "Unique ID": newWebActivity.uid,
+        "Account ID": newWebActivity.accountId,
+        "Event ID": newWebActivity.eventId,
+        "Bill Status": newWebActivity.billStatus,
+        "Action Date": newWebActivity.actionDate
+    }
+
+"""
+Helper function for returning cohorts
+Finds all unique cycles and the returns them as a list of dictionaries
+Dict has cycle length attributes
+"""
+def createCohortList(cohorts):
+    condensedCohorts = set()
+    for coh in cohorts:
+        condensedCohorts.add(coh.cid)
+
+    structuredResponse = []
+    for coh in condensedCohorts:
+        newdict = dict()
+        newdict['cohortId'] = coh.cid
+        newdict['paper'] = coh.paper
+        newdict['text'] = coh.text
+        newdict['email'] = coh.email
+        structuredResponse.append(newdict)
+    return structuredResponse
+
+
