@@ -1,0 +1,45 @@
+<html>
+    <head>
+        <title>List of Cohorts</title>
+        <link rel= "stylesheet" type= "text/css" href= "/static/style.css" media="all">
+        <script type=text/javascript src="/static/table.js"></script>
+    </head>
+
+    <body>
+        <h1>Cohorts</h1>
+
+        <p><a href="/">Back to Main</a></p>
+
+        <table id="dataTable">
+
+            {% if cohorts|length > 0 %}
+
+            <tr>
+                {% set ns = namespace(idx=0) %}
+                {% for key in cohorts[0].keys() %}
+                <th onclick="sortTable({{ns.idx}})">{{ key }}</th>
+                {% set ns.idx = ns.idx + 1 %}
+                {% endfor %}
+                <!-- <th>view patients?</th> -->
+            </tr>
+                {% for cohort in cohorts %}
+                <tr>
+                    {% set ns = namespace(id=-1) %}
+                    {% for key,value in cohort.items() %}
+
+                    {% if key == "cohort ID" %}
+                        {% set ns.id = value %}
+                    {% endif %}
+
+                        <td>{{ value }}</td>
+
+                    {% endfor %}
+                    <!-- <td><button onclick="viewPatients({{ns.id}})">patients</button></td> -->
+                </tr>
+                {% endfor %}
+            {% else %}
+                <p>no cohorts</p>
+            {% endif %}
+        </table>
+    </body>
+</html>

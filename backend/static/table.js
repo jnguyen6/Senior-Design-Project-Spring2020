@@ -1,6 +1,8 @@
+// sorts a table by column
+// taken from https://www.w3schools.com/howto/howto_js_sort_table.asp
 function sortTable(n) {
     var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
-    table = document.getElementById("jobTable");
+    table = document.getElementById("dataTable");
 
     switching = true;
     // Set the sorting direction to ascending:
@@ -59,7 +61,7 @@ async function queueJob() {
     await fetch('/jobs', {
         method: 'POST',
         headers: {
-            'Content-type': 'application/json; charset=UTF-8',
+            'Content-type': 'application/json; charset=UTF-8'
         }
     });
     window.location.replace("/view/jobs");
@@ -70,13 +72,18 @@ async function cancelJob(id) {
     await fetch('/jobs/cancel/' + id, {
         method: 'PATCH',
         headers: {
-            'Content-type': 'application/json; charset=UTF-8',
+            'Content-type': 'application/json; charset=UTF-8'
         }
     });
     window.location.replace("/view/jobs");
 }
 
-function getPrettyDate(datetime) {
-
-    return "";
-}
+// async function viewPatients(id) {
+//     console.log("received " + id)
+//     await fetch('/jobs/view/patients/' + id, {
+//         method: 'GET',
+//         headers: {
+//             'Content-type': 'application/json; charset=UTF-8'
+//         }
+//     });
+// }
