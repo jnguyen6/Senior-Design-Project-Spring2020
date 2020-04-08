@@ -1,30 +1,38 @@
 <html>
     <head>
-        <title>List of Jobs</title>
+        <title>List of Users</title>
         <link rel= "stylesheet" type= "text/css" href= "/static/style.css" media="all">
         <script type=text/javascript src="/static/table.js"></script>
     </head>
 
     <body>
-        <h1>Jobs</h1>
+        <h1>Users</h1>
 
-        <div>
-            <button onclick="queueJob()">Queue a job</button>
+        <div class="pagination">
+            {% set ns = namespace(idx=0, clickedOn=0) %}
+            {% for smallList in users %}
+            <a onclick="grabData({{ns.idx}}">{{ns.idx + 1}}</a>
+            {% set ns.idx = ns.idx + 1 %}
+            {% endfor %}
         </div>
 
-        <table id="jobTable">
+        <table id="dataTable">
 
-            {% if jobs|length > 0 %}
+            {% if users|length > 0 %}
 
-            <tr>
-                {% set ns = namespace(idx=0) %}
-                {% for key in jobs[0].keys() %}
-                <th onclick="sortTable({{ns.idx}})">{{ key }}</th>
-                {% set ns.idx = ns.idx + 1 %}
-                {% endfor %}
-                <th>cancel?</th>
-            </tr>
-                {% for job in jobs %}
+            {% for smallList in users %}
+
+
+                {% if smallList | length > 0 %}
+                <tr>
+                    {% set ns = namespace(idx=0) %}
+                    {% for key in smallList[0].keys() %}
+                    <th onclick="sortTable({{ns.idx}})">{{ key }}</th>
+                    {% set ns.idx = ns.idx + 1 %}
+                    {% endfor %}
+                    <th>cancel?</th>
+                </tr>
+                {% for job in smallList %}
                 <tr>
                     {% set ns = namespace(status=false, id=-1) %}
                     {% for key,value in job.items() %}
@@ -37,6 +45,7 @@
 
                         <td>{{ value }}</td>
 
+
                     {% endfor %}
                     {% if ns.status %}
                     <td><button onclick="cancelJob({{ns.id}})">cancel</button></td>
@@ -46,8 +55,12 @@
                     {% endif %}
                 </tr>
                 {% endfor %}
+                {% else %}
+                    <p>no users</p>
+                {% endif%}
+            {% endfor %}
             {% else %}
-                <p>no jobs</p>
+                <p>no users</p>
             {% endif %}
         </table>
     </body>

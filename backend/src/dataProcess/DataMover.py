@@ -12,7 +12,7 @@ Tied each record to a patient ID
 def moveData():
     absolutePath = os.path.abspath(__file__)[:-13]
 
-    rel_path = '\SponsorDataSets\demographics.csv'
+    rel_path = '/SponsorDataSets/demographics.csv'
     demPath = absolutePath + rel_path
     with open(demPath, newline='') as csvfile:
         patientReader = csv.reader(csvfile, delimiter=',', quotechar='|')
@@ -34,7 +34,7 @@ def moveData():
                 plineCount += 1
 
 
-    rel_path = '\SponsorDataSets\commuications.csv'
+    rel_path = '/SponsorDataSets/commuications.csv'
     commPath = absolutePath + rel_path
     with open(commPath, newline='') as csvfile:
         comReader = csv.reader(csvfile, delimiter=',', quotechar='|')
@@ -55,7 +55,7 @@ def moveData():
                 clineCount += 1
     #return
 
-    rel_path = '\SponsorDataSets\website activity.csv'
+    rel_path = '/SponsorDataSets/website activity.csv'
     webPath = absolutePath + rel_path
     with open(webPath, newline='') as csvfile:
         webReader = csv.reader(csvfile, delimiter=',', quotechar='|')
