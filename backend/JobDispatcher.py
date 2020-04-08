@@ -1,6 +1,7 @@
 import time
 import sys
 from app import db
+import src.algorithms.linear_regression as linear_regression
 
 # Runs the background task of continuously checking the database and updating
 # the job statuses.
@@ -22,8 +23,8 @@ def run_background_task():
                     # And wait for a certain amount of time (Testing purposes)
                     time.sleep(5)
 
-                    # TODO: Send job to learning algorithm component.
-                    # TODO: Wait for response before setting job status to DONE
+                    # Start the learning job
+                    linear_regression.main()
 
                     print("Job " + str(job.id) + " is now done.")
                     # Set job status to 2 (DONE)
@@ -33,4 +34,5 @@ def run_background_task():
     except KeyboardInterrupt:
         sys.exit()
 
-run_background_task()
+if __name__ == '__main__':
+    run_background_task()
