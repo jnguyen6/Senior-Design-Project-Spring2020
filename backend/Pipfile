@@ -13,6 +13,7 @@ matplotlib = "*"
 executor = "*"
 scikit-learn = "*"
 pandas = "*"
+pytz = "*"
 
 [requires]
 python_version = "3.7"
