@@ -91,14 +91,54 @@ def getAllPatientsFreq(communication_type):
     print(freqList[4])
     return freqList
 
+# Generate a list containing all successes or not for patients, in order
+def getAllPatientsSuccess():
+    header_content = {'Content-type': 'application/json'}
+    r = requests.get("http://127.0.0.1:5000/patients/account_id", headers=header_content, verify=False)
+    idList = r.json()
+    r1 = requests.get("http://127.0.0.1:5000/web activities", headers=header_content, verify=False)
+    webActList = r1.json()
+    r2 = requests.get("http://127.0.0.1:5000/communications", headers=header_content, verify=False)
+    comList = r2.json()
+    successScoreList = []
+
+    for id in idList:
+        paid = 0
+        firstTimeGet = 0
+        firstComTime = datetime(1970, 1, 1)
+        timePaid = datetime(1970, 1, 1)
+        successScore = 0
+        for com in comList:
+            if com.get('account_id') == id and firstTimeGet == 0:
+                firstComTime = datetime.strptime(com.get('notification_date_time'), '%Y-%m-%d %H:%M:%S')
+                firstTimeGet = 1
+        for webAct in webActList:
+            if webAct.get('account_id') == id and webAct.get('billStatus') == "PAID":
+                paid = 1
+                actionDate = webAct.get('actionDate')
+                timePaid = datetime.strptime(actionDate, '%Y-%m-%d %H:%M:%S')
+        if (paid == 1):
+            timeDiff = timePaid - firstComTime
+            timeDiffInSec = timeDiff.total_seconds()
+            timeDiffInWeek = timeDiffInSec / 3600 / 24 / 7;
+            successScore = 1 / timeDiffInWeek
+        if (paid == 0):
+            successScore = 0
+        successScoreList.append(successScore)
+        print(successScore)
+    return successScoreList
+
+
 # Main Method only for Testing
 if __name__ == "__main__":
     getAllPatientsAgeInOrder()
     getAllPatientsFamilyIncome()
     getAllPatientsGenderInOrder()
     getAllPatientsBillAmount()
-    getAllPatientsFreq("PAPER")
+    #getAllPatientsFreq("PAPER")
     print("-------")
-    getAllPatientsFreq("TEXT")
+    #getAllPatientsFreq("TEXT")
     print("-------")
-    getAllPatientsFreq("EMAIL")
+    #getAllPatientsFreq("EMAIL")
+    print("-------")
+    getAllPatientsSuccess()
