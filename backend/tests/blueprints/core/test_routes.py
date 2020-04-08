@@ -1,10 +1,24 @@
 import json
 import pytest
+from src.blueprints.core.routes import get_status_string
 from src.models.QueueJob import QueueStatus
 
 @pytest.fixture
 def queue_shape():
     return dict(jobId=0, status="", dateCreated="").keys()
+
+def test_get_client_shape():
+    assert "NOT_STARTED" == get_status_string(0)
+    assert "IN_PROGRESS" == get_status_string(1)
+    assert "DONE" == get_status_string(2)
+    assert "CANCELED" == get_status_string(3)
+
+def test_info_view(client):
+    resp = client.get('/info')
+    assert resp.status_code == 200
+
+    body = json.loads(resp.data)
+    assert len(body.keys()) == 6
 
 def test_create_job(client, queue_shape):
     resp = client.post('/jobs')
@@ -13,6 +27,7 @@ def test_create_job(client, queue_shape):
     assert json.loads(resp.data).keys() == queue_shape
 
 def test_get_all_jobs(client, queue_shape):
+    client.post('/jobs')
     resp = client.get('/jobs')
     assert resp.status_code == 200
 
@@ -21,6 +36,10 @@ def test_get_all_jobs(client, queue_shape):
 
     if len(data_list) > 0:
         assert data_list[0].keys() == queue_shape
+
+def test_invalid_filters(client):
+    resp = client.get('/jobs?filter=NOT_STARTED&filter2=X')
+    assert resp.status_code == 400
 
 def test_get_job_by_id(client, queue_shape):
     new_job = json.loads(client.post('/jobs').data)

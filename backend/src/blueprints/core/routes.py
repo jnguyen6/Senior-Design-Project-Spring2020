@@ -9,6 +9,16 @@ from src.models.Patient import Patient
 import json
 from src.algorithms.categorize import categorizeFromBuckets
 
+def get_status_string(status_int):
+    if status_int is 0:
+        return "NOT_STARTED"
+    elif status_int is 1:
+        return "IN_PROGRESS"
+    elif status_int is 2:
+        return "DONE"
+    elif status_int is 3:
+        return "CANCELED"
+
 # Converts the object into a JSON format to be sent as part a response message
 def build_json_response(obj):
     return Response(obj, content_type='application/json')
@@ -37,25 +47,19 @@ def info_view():
 @bp.route("/jobs", methods=['POST'])
 def create_job():
     from src.models.QueueJob import QueueJob
-    newQueueJob = QueueJob()
-    db.session.add(newQueueJob)
+    new_queue_job = QueueJob()
+    db.session.add(new_queue_job)
     db.session.commit()
 
     # Check the current status of the newly created job
     status = ""
-    if newQueueJob.status is 0:
+    if new_queue_job.status is 0:
         status = "NOT_STARTED"
-    elif newQueueJob.status is 1:
-        status = "IN_PROGRESS"
-    elif newQueueJob.status is 2:
-        status = "DONE"
-    elif newQueueJob.status is 3:
-        status = "CANCELED"
 
     return {
-        "jobId": newQueueJob.id,
+        "jobId": new_queue_job.id,
         "status": status,
-        "dateCreated": newQueueJob.date_created
+        "dateCreated": new_queue_job.date_created
     }
 
 # Retrieve a learning job from the job queue database by id
@@ -65,15 +69,7 @@ def get_job(job_id):
     job = QueueJob.query.get(job_id)
 
     # Check the current status of the newly created job
-    status = ""
-    if job.status is 0:
-        status = "NOT_STARTED"
-    elif job.status is 1:
-        status = "IN_PROGRESS"
-    elif job.status is 2:
-        status = "DONE"
-    elif job.status is 3:
-        status = "CANCELED"
+    status = get_status_string(job.status)
 
     return {
         "jobId": job.id,
@@ -98,7 +94,7 @@ def get_jobs():
     else:
         # If the number of arguments provided is not 1, then return a usage message
         if len(job_filter) > 1:
-            usage_info_filter()
+            return Response(usage_info_filter(), status=400)
         # Otherwise, check if the correct argument is given, and filter the list of jobs
         # accordingly
         if str(job_filter['filter']) == "NOT_STARTED":
@@ -110,21 +106,14 @@ def get_jobs():
         elif str(job_filter['filter']) == "CANCELED":
             jobs = QueueJob.query.filter(QueueJob.status == 3)
         else:
-            usage_info_filter()
+            return Response(usage_info_filter(), status=400)
 
     # After retrieving all of the requested jobs from the database, convert the jobs into a
     # a list of dictionaries before sending the list as a response message
     for job in jobs:
         jobDict = dict()
         jobDict['jobId'] = job.id
-        if job.status is 0:
-            jobDict['status'] = "NOT_STARTED"
-        elif job.status is 1:
-            jobDict['status'] = "IN_PROGRESS"
-        elif job.status is 2:
-            jobDict['status'] = "DONE"
-        elif job.status is 3:
-            jobDict['status'] = "CANCELED"
+        jobDict['status'] = get_status_string(job.status)
         jobDict['dateCreated'] = job.date_created
         jobDictList.append(jobDict)
 
@@ -190,6 +179,26 @@ def get_cohorts():
     
     condensedCohorts = createCohortList(cohorts)
     return build_json_response(json.dumps(condensedCohorts, default=str))
+  
+"""
+Helper function for returning cohorts
+Finds all unique cycles and the returns them as a list of dictionaries
+Dict has cycle length attributes
+"""
+def createCohortList(cohorts):
+    condensedCohorts = set()
+    for coh in cohorts:
+        condensedCohorts.add(coh.cid)
+
+    structuredResponse = []
+    for coh in condensedCohorts:
+        newdict = dict()
+        newdict['cohortId'] = coh.cid
+        newdict['paper'] = coh.paper
+        newdict['text'] = coh.text
+        newdict['email'] = coh.email
+        structuredResponse.append(newdict)
+    return structuredResponse
 
 # Enter a new created cohort into DB (for initializing the cohorts for further use)
 @bp.route("/patient/cohorts/<int:cid> <int:paper> <int:text> <int:email>", methods=['POST'])
@@ -266,24 +275,68 @@ def create_web_activity(uid, account_id, event_id, bill_status, action_date):
         "Action Date": newWebActivity.actionDate
     }
 
-"""
-Helper function for returning cohorts
-Finds all unique cycles and the returns them as a list of dictionaries
-Dict has cycle length attributes
-"""
-def createCohortList(cohorts):
-    condensedCohorts = set()
-    for coh in cohorts:
-        condensedCohorts.add(coh.cid)
+# Get birth year of all patients
+@bp.route("/patients/birth_year", methods=['GET'])
+def get_patients_birth_year():
+    from src.models.Patient import Patient
+    patients = Patient.query.all()
+    birthYearList = []
+    for patient in patients:
+        birthYearList.append(patient.birth_year)
+    return build_json_response(json.dumps(birthYearList, default=str))
 
-    structuredResponse = []
-    for coh in condensedCohorts:
-        newdict = dict()
-        newdict['cohortId'] = coh.cid
-        newdict['paper'] = coh.paper
-        newdict['text'] = coh.text
-        newdict['email'] = coh.email
-        structuredResponse.append(newdict)
-    return structuredResponse
+# Get gender of all patients
+@bp.route("/patients/gender", methods=['GET'])
+def get_patients_gender():
+    from src.models.Patient import Patient
+    patients = Patient.query.all()
+    genderList = []
+    for patient in patients:
+        genderList.append(patient.gender)
+    return build_json_response(json.dumps(genderList, default=str))
 
+# Get family income of all patients
+@bp.route("/patients/family_income", methods=['GET'])
+def get_patients_family_income():
+    from src.models.Patient import Patient
+    patients = Patient.query.all()
+    incomeList = []
+    for patient in patients:
+        incomeList.append(patient.family_income)
+    return build_json_response(json.dumps(incomeList, default=str))
 
+# Get bill amount of all patients
+@bp.route("/patients/bill_amount", methods=['GET'])
+def get_patients_bill_amount():
+    from src.models.Patient import Patient
+    patients = Patient.query.all()
+    billList = []
+    for patient in patients:
+        billList.append(patient.bill_amount)
+    return build_json_response(json.dumps(billList, default=str))
+
+# Get account id of all patients (for iterating patient list and assign communication frequency variable)
+@bp.route("/patients/account_id", methods=['GET'])
+def get_patients_account_id():
+    from src.models.Patient import Patient
+    patients = Patient.query.all()
+    idList = []
+    for patient in patients:
+        idList.append(patient.accountId)
+    return build_json_response(json.dumps(idList, default=str))
+
+# Get all communications
+@bp.route("/communications", methods=['GET'])
+def get_all_communications():
+    from src.models.Communication import Communication
+    coms = Communication.query.all()
+    comList = []
+    for com in coms:
+        comDict = dict()
+        comDict['uid'] = com.uid
+        comDict['account_id'] = com.accountId
+        comDict['notification_date_time'] = com.notification_date_time
+        comDict['method'] = com.method
+        comDict['notification_type'] = com.notification_type
+        comList.append(comDict)
+    return build_json_response(json.dumps(comList, default=str))
