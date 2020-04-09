@@ -20,7 +20,7 @@ Populate buckets of cohorts
 #TODO need clarification on if tables need to be created on startup always
 Seems like they would not
 """
-#@app.before_first_request
+@app.before_first_request
 def populateCohorts():
     from src.models.Cohort import Cohort
     cohorts = Cohort.query.all()
@@ -29,17 +29,17 @@ def populateCohorts():
     incomes = [0, 50000, 100000, 150000, 250000, -1]
     bills = [0, 1500, 5000, 10000, 25000, 100000, -1]
 
-    if len(cohorts == 0):
+    if len(cohorts) == 0:
         #Age brackets
         for i in range(1,6):
             ageMax = ages[i]
             ageMin = ages[i-1]
-            
+
             #income brackets
             for i in range(1,6):
                 incomeMax = incomes[i]
                 incomeMin = incomes[i-1]
-                
+
                 #Bill brackets
                 for i in range(1,7):
                     billMax = bills[i]
@@ -48,12 +48,12 @@ def populateCohorts():
                     maleCohort = Cohort()
                     maleCohort.initialize(ageMin, ageMax, 'M', incomeMin, incomeMax, billMin, billMax)
                     db.session.add(maleCohort)
-                    db.commit()
 
                     femaleCohort = Cohort()
                     femaleCohort.initialize(ageMin, ageMax, 'F', incomeMin, incomeMax, billMin, billMax)
                     db.session.add(femaleCohort)
-                    db.commit()
+
+        db.session.commit()
 
 from src.blueprints.core import bp as bp_core
 bp_core.config(app)
