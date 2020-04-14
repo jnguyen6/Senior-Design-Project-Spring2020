@@ -35,12 +35,12 @@ def populateCohorts():
         for i in range(1,6):
             ageMax = ages[i]
             ageMin = ages[i-1]
-            
+
             #income brackets
             for i in range(1,6):
                 incomeMax = incomes[i]
                 incomeMin = incomes[i-1]
-                
+
                 #Bill brackets
                 for i in range(1,7):
                     billMax = bills[i]
@@ -53,6 +53,7 @@ def populateCohorts():
                     femaleCohort = Cohort()
                     femaleCohort.initialize(ageMin, ageMax, 'F', incomeMin, incomeMax, billMin, billMax)
                     db.session.add(femaleCohort)
+
         db.session.commit()
 
 from src.blueprints.core import bp as bp_core

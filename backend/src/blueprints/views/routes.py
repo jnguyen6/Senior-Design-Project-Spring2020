@@ -14,19 +14,19 @@ def index():
 
     return render_template('index.html')
 
+# @bp.route("/view/users")
+# def get_users_default():
+
+#     return get_users(0)
+
 @bp.route("/view/users")
-def get_users_default():
-
-    return get_users(0)
-
-@bp.route("/view/users/<int:idx>")
-def get_users(idx):
+def get_users():
 
     comms = Communication.query.all()
     userList = []
     count = 0
     currentIdx = 0
-    smallList = []
+    # smallList = []
     for com in comms:
         count = count + 1
         comDict = dict()
@@ -34,15 +34,16 @@ def get_users(idx):
         comDict['date/time'] = com.notification_date_time
         comDict['method'] = com.method
         comDict['type'] = com.notification_type
-        smallList.append(comDict)
+        userList.append(comDict)
 
         if count == 20:
-            userList.append(smallList)
-            smallList = []
-            if currentIdx == idx:
-                break
+            # userList.append(smallList)
+            # smallList = []
+            # if currentIdx == idx:
+            # for right now, only send the first 20 entries
+            break
 
-    return render_template('users.html', users=userList[idx])
+    return render_template('users.html', users=userList)
 
 @bp.route("/view/cohorts")
 def get_cohorts():
