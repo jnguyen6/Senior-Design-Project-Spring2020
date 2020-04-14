@@ -340,3 +340,19 @@ def get_all_communications():
         comDict['notification_type'] = com.notification_type
         comList.append(comDict)
     return build_json_response(json.dumps(comList, default=str))
+
+# Get all website activities
+@bp.route("/web activities", methods=['GET'])
+def get_all_web_activities():
+    from src.models.WebActivity import WebActivity
+    webActs = WebActivity.query.all()
+    webActList = []
+    for webAct in webActs:
+        webActDict = dict()
+        webActDict['uid'] = webAct.uid
+        webActDict['account_id'] = webAct.accountId
+        webActDict['eventId'] = webAct.eventId
+        webActDict['billStatus'] = webAct.billStatus
+        webActDict['actionDate'] = webAct.actionDate
+        webActList.append(webActDict)
+    return build_json_response(json.dumps(webActList, default=str))
