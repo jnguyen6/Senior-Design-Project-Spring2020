@@ -24,9 +24,9 @@ def multiLinearRegression(yList, x1List, x2List):
         x2Total += x2List[index]
         sumX1Product += math.pow(x1List[index], 2)
         sumX2Product += math.pow(x2List[index], 2)
-        sumX1X2 = x1List[index] * x2List[index]
-        sumX1Y = x1List[index] * yList[index]
-        sumX2Y = x2List[index] * yList[index]
+        sumX1X2 += x1List[index] * x2List[index]
+        sumX1Y += x1List[index] * yList[index]
+        sumX2Y += x2List[index] * yList[index]
         index += 1
     denominator = sumX1Product * sumX2Product - math.pow(sumX1X2, 2)
     b1 = (sumX2Product * sumX1Y - sumX1X2 * sumX2Y) / denominator
@@ -49,18 +49,18 @@ def multiLinearRegression(yList, x1List, x2List):
 def analyzePatient(age, income, gender, bill_amount, cons, maxCom, b0List, b1List, b2List):
     # Step1
     # generate 12 values of predicting the patient with same amount of communication variables
-    y_ageEmail = b0List[0] + b1List[0]*age + b2List[0]*cons
-    y_ageMail = b0List[1] + b1List[1]*age + b2List[1]*cons
+    y_ageEmail = b0List[0] + b1List[0] * age + b2List[0]*cons
+    y_ageMail = b0List[1] + b1List[1] * age + b2List[1]*cons
     y_ageText = b0List[2] + b1List[2] * age + b2List[2] * cons
-    y_incomeEmail = b0List[3] + b1List[3] * age + b2List[3] * cons
-    y_incomeMail = b0List[4] + b1List[4] * age + b2List[4] * cons
-    y_incomeText = b0List[5] + b1List[5] * age + b2List[5] * cons
-    y_genderEmail = b0List[6] + b1List[6] * age + b2List[6] * cons
-    y_genderMail = b0List[7] + b1List[7] * age + b2List[7] * cons
-    y_genderText = b0List[8] + b1List[8] * age + b2List[8] * cons
-    y_billEmail = b0List[9] + b1List[9] * age + b2List[9] * cons
-    y_billMail = b0List[10] + b1List[10] * age + b2List[10] * cons
-    y_billText = b0List[11] + b1List[11] * age + b2List[11] * cons
+    y_incomeEmail = b0List[3] + b1List[3] * income + b2List[3] * cons
+    y_incomeMail = b0List[4] + b1List[4] * income + b2List[4] * cons
+    y_incomeText = b0List[5] + b1List[5] * income + b2List[5] * cons
+    y_genderEmail = b0List[6] + b1List[6] * gender + b2List[6] * cons
+    y_genderMail = b0List[7] + b1List[7] * gender + b2List[7] * cons
+    y_genderText = b0List[8] + b1List[8] * gender + b2List[8] * cons
+    y_billEmail = b0List[9] + b1List[9] * bill_amount + b2List[9] * cons
+    y_billMail = b0List[10] + b1List[10] * bill_amount + b2List[10] * cons
+    y_billText = b0List[11] + b1List[11] * bill_amount + b2List[11] * cons
     # Step2
     yEmail = y_ageEmail + y_incomeEmail + y_genderEmail + y_billEmail
     yMail = y_ageMail + y_incomeMail + y_genderMail + y_billMail
