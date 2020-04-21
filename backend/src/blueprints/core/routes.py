@@ -6,6 +6,7 @@ from src.models.Cohort import Cohort
 from src.models.Communication import Communication
 from src.models.WebActivity import WebActivity
 from src.models.Patient import Patient
+from src.models.LinearRegressionModel import LinearRegressionModel
 import json
 from src.algorithms.categorize import categorizeFromBuckets
 
@@ -356,3 +357,65 @@ def get_all_web_activities():
         webActDict['actionDate'] = webAct.actionDate
         webActList.append(webActDict)
     return build_json_response(json.dumps(webActList, default=str))
+
+# Create new prediction model into DB
+@bp.route("/prediction_model/<int:uid>,<float:b0_age_email>,<float:b1_age_email>,<float:b2_age_email>,<float:b0_age_paper>,<float:b1_age_paper>,<float:b2_age_paper>,<float:b0_age_text>,<float:b1_age_text>,<float:b2_age_text>,<float:b0_income_email>,<float:b1_income_email>,<float:b2_income_email>,<float:b0_income_paper>,<float:b1_income_paper>,<float:b2_income_paper>,<float:b0_income_text>,<float:b1_income_text>,<float:b2_income_text>,<float:b0_gender_email>,<float:b1_gender_email>,<float:b2_gender_email>,<float:b0_gender_paper>,<float:b1_gender_paper>,<float:b2_gender_paper>,<float:b0_gender_text>,<float:b1_gender_text>,<float:b2_gender_text>,<float:b0_bill_email>,<float:b1_bill_email>,<float:b2_bill_email>,<float:b0_bill_paper>,<float:b1_bill_paper>,<float:b2_bill_paper>,<float:b0_bill_text>,<float:b1_bill_text>,<float:b2_bill_text>", methods=['POST'])
+def create_linear_regression_prediction_model(uid, b0_age_email, b1_age_email, b2_age_email, b0_age_paper, b1_age_paper, b2_age_paper, b0_age_text, b1_age_text, b2_age_text, b0_income_email, b1_income_email, b2_income_email, b0_income_paper, b1_income_paper, b2_income_paper, b0_income_text, b1_income_text, b2_income_text, b0_gender_email, b1_gender_email, b2_gender_email, b0_gender_paper, b1_gender_paper, b2_gender_paper, b0_gender_text, b1_gender_text, b2_gender_text, b0_bill_email, b1_bill_email, b2_bill_email, b0_bill_paper, b1_bill_paper, b2_bill_paper, b0_bill_text, b1_bill_text, b2_bill_text):
+    from src.models.LinearRegressionModel import LinearRegressionModel
+    model = LinearRegressionModel()
+    model.uid = uid
+
+    model.b0_age_email = b0_age_email
+    model.b1_age_email = b1_age_email
+    model.b2_age_email = b2_age_email
+
+    model.b0_age_paper = b0_age_paper
+    model.b1_age_paper = b1_age_paper
+    model.b2_age_paper = b2_age_paper
+
+    model.b0_age_text = b0_age_text
+    model.b1_age_text = b1_age_text
+    model.b2_age_text = b2_age_text
+
+    model.b0_income_email = b0_income_email
+    model.b1_income_email = b1_income_email
+    model.b2_income_email = b2_income_email
+
+    model.b0_income_paper = b0_income_paper
+    model.b1_income_paper = b1_income_paper
+    model.b2_income_paper = b2_income_paper
+
+    model.b0_income_text = b0_income_text
+    model.b1_income_text = b1_income_text
+    model.b2_income_text = b2_income_text
+
+    model.b0_gender_email = b0_gender_email
+    model.b1_gender_email = b1_gender_email
+    model.b2_gender_email = b2_gender_email
+
+    model.b0_gender_paper = b0_gender_paper
+    model.b1_gender_paper = b1_gender_paper
+    model.b2_gender_paper = b2_gender_paper
+
+    model.b0_gender_text = b0_gender_text
+    model.b1_gender_text = b1_gender_text
+    model.b2_gender_text = b2_gender_text
+
+    model.b0_bill_email = b0_bill_email
+    model.b1_bill_email = b1_bill_email
+    model.b2_bill_email = b2_bill_email
+
+    model.b0_bill_paper = b0_bill_paper
+    model.b1_bill_paper = b1_bill_paper
+    model.b2_bill_paper = b2_bill_paper
+
+    model.b0_bill_text = b0_bill_text
+    model.b1_bill_text = b1_bill_text
+    model.b2_bill_text = b2_bill_text
+
+    db.session.add(model)
+    db.session.commit()
+
+    return {
+        "Unique ID": model.uid,
+    }
