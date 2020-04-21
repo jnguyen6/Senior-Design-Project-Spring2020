@@ -20,7 +20,7 @@ def getAllPatientsAgeInOrder():
     ageList = []
     for birthYear in birthYearList:
         ageList.append(currentYear - birthYear)
-    print(ageList[0])
+    #print(ageList[0])
     return ageList
 
 # Generate a list containing family income of all patients, in order
@@ -28,7 +28,7 @@ def getAllPatientsFamilyIncome():
     header_content = {'Content-type': 'application/json'}
     r = requests.get("http://127.0.0.1:5000/patients/family_income", headers=header_content, verify=False)
     incomeList = r.json()
-    print(incomeList[0])
+    #print(incomeList[0])
     return incomeList
 
 # Generate a list containing genders of all patients, in order
@@ -36,7 +36,7 @@ def getAllPatientsGenderInOrder():
     header_content = {'Content-type': 'application/json'}
     r = requests.get("http://127.0.0.1:5000/patients/gender", headers=header_content, verify=False)
     genderList = r.json()
-    print(genderList[0])
+    #print(genderList[0])
     return genderList
 
 # Generate a list containing bill amounts of all patients, in order
@@ -44,7 +44,7 @@ def getAllPatientsBillAmount():
     header_content = {'Content-type': 'application/json'}
     r = requests.get("http://127.0.0.1:5000/patients/bill_amount", headers=header_content, verify=False)
     billList = r.json()
-    print(billList[0])
+    #print(billList[0])
     return billList
 
 # Generate a list containing frequency of sending certain communications to all patients, in order
@@ -84,11 +84,11 @@ def getAllPatientsFreq(communication_type):
             timeDiffInSec = timeDiff.total_seconds()
             timeDiffInThreeMonths = timeDiffInSec / 3600 / 24 / 30 / 3;
         freqList.append(numMail/timeDiffInThreeMonths)
-    print(freqList[0])
-    print(freqList[1])
-    print(freqList[2])
-    print(freqList[3])
-    print(freqList[4])
+    # print(freqList[0])
+    # print(freqList[1])
+    # print(freqList[2])
+    # print(freqList[3])
+    # print(freqList[4])
     return freqList
 
 # Generate a list containing all successes or not for patients, in order
@@ -125,7 +125,7 @@ def getAllPatientsSuccess():
         if (paid == 0):
             successScore = 0
         successScoreList.append(successScore)
-        print(successScore)
+        #print(successScore)
     return successScoreList
 
 

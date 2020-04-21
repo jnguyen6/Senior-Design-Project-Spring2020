@@ -30,7 +30,7 @@ def moveData():
                 family_income = row[4]
                 bill_amount = row[5]
                 r = requests.post("http://127.0.0.1:5000/patients/" + account_id + "," + gender + "," + birth_year + "," + address_zip + "," + family_income + "," + bill_amount, headers=header_content, verify=False)
-                print(r.status_code)
+                #print(r.status_code)
                 plineCount += 1
 
 
@@ -51,7 +51,7 @@ def moveData():
                 notification_type = row[3]
                 uidStr = str(clineCount)
                 r = requests.post("http://127.0.0.1:5000/communications/" + uidStr + "," + account_id + "," + notification_date_time + "," + method + "," + notification_type, headers=header_content, verify=False)
-                print(r.status_code)
+                #print(r.status_code)
                 clineCount += 1
     #return
 
@@ -72,7 +72,7 @@ def moveData():
                 action_date = row[3]
                 uid = str(wlineCount)
                 r = requests.post("http://127.0.0.1:5000/web activities/" + uid + "," + account_id + "," + event_id + "," + bill_status + "," + action_date, headers=header_content, verify=False)
-                print(r.status_code)
+                #print(r.status_code)
                 wlineCount += 1
 
         return

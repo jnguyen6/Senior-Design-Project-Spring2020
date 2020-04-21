@@ -13,6 +13,8 @@ def start_learning_algorithm():
     b1_list = []
     b2_list = []
 
+    print("Retrieving variables for: patient demographics (X1), frequency of communication methods (X2),"
+          " and success/failures for patients (Y)...")
     # X1 variables (patient demographics)
     patient_age_list = mlVariableGetter.getAllPatientsAgeInOrder()
     patient_income_list = mlVariableGetter.getAllPatientsFamilyIncome()
@@ -35,6 +37,7 @@ def start_learning_algorithm():
     succ_list = mlVariableGetter.getAllPatientsSuccess()
 
     # Start running the learning algorithm (linear regression) and append b0, b1, and b2 values to appropriate list
+    print("Running multi-linear regression algorithm...")
 
     # Patient age and email
     prediction_variable_list = linear_regression.multiLinearRegression(succ_list, patient_age_list, freq_email_list)
@@ -100,18 +103,10 @@ def start_learning_algorithm():
     b1_list.append(prediction_variable_list[1])
     b2_list.append(prediction_variable_list[2])
 
-    # Print out the b0, b1, and b2 lists
-    print("b0 list: ")
-    print(b0_list)
-    print("b1 list: ")
-    print(b1_list)
-    print("b2 list: ")
-    print(b2_list)
+    print("Multi-linear regression algorithm complete.")
 
-    # TODO Assign communication cycles to each cohort using b0, b1, and b2
     # TODO Come up with max communication frequency (ex.: the max # of mails this patient should get is 10)
-    # In analyzePatient(), it would probably be better to store the communication cycles in the cohort.
-    # To do that, we'll need to pass the uid of the cohort and generate a cid
+    print("Updating cohorts with new communication cycles and cohort ID...")
     cohorts = Cohort.query.all()
     for cohort in cohorts:
         gender = 0
@@ -140,10 +135,11 @@ def start_learning_algorithm():
         #      If paper = 2, text = 1, email = 0, then cid = 210
         cohort.cid = int(str(cohort.paper) + str(cohort.text) + str(cohort.email))
 
-        print("Cohort: ")
-        print(cohort)
+        # print("Cohort: ")
+        # print(cohort)
         db.session.add(cohort)
     db.session.commit()
+    print("Cohorts are now updated.")
 
 
 # Runs the background task of continuously checking the database and updating
