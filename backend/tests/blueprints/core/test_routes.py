@@ -69,13 +69,14 @@ def test_cancel_job(client, queue_shape):
 
 def test_analyze_patient(client):
     patient = dict(
-        account_id = 1,
-        date_of_birth = "",
+        id = 1,
+        dateOfBirth = 1998,
         gender = "m",
         income = 20000,
-        bill = 500
+        billAmount = 500,
+        OptOut = False,
     )
-    resp = client.post('/patient/analyze', data=json.dumps(patient))
+    resp = client.post('/patient/analyze', data=json.dumps(patient, default=str), content_type='application/json')
     assert resp.status_code == 200
     # TODO Test the expected outputs of this endpoint
 

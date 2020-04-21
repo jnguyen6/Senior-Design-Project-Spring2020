@@ -13,7 +13,6 @@ from src.models import QueueJob, Cohort
 
 @app.before_first_request
 def create_tables():
-    db.drop_all()
     db.create_all()
 
 """
@@ -61,3 +60,6 @@ bp_core.config(app)
 
 from src.blueprints.views import bp as bp_views
 bp_views.config(app)
+
+if __name__ == "__main__":
+    app.run()

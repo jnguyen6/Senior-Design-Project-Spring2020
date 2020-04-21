@@ -8,3 +8,4 @@ settings.json
 htmlcov/
 .vscode/
 **/.DS_Store
+*supervisord.*
