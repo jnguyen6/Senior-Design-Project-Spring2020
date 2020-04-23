@@ -8,6 +8,7 @@ from src.models.WebActivity import WebActivity
 from src.models.Patient import Patient
 import json
 from src.algorithms.categorize import categorizeFromBuckets
+from datetime import date
 
 def get_status_string(status_int):
     if status_int is 0:

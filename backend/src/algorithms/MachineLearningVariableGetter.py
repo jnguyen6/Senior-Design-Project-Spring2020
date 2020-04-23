@@ -84,11 +84,13 @@ def getAllPatientsFreq(communication_type):
             timeDiffInSec = timeDiff.total_seconds()
             timeDiffInThreeMonths = timeDiffInSec / 3600 / 24 / 30 / 3;
         freqList.append(numMail/timeDiffInThreeMonths)
+    """
     print(freqList[0])
     print(freqList[1])
     print(freqList[2])
     print(freqList[3])
     print(freqList[4])
+    """
     return freqList
 
 # Generate a list containing all successes or not for patients, in order

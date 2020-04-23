@@ -38,7 +38,7 @@ def categorizeFromBuckets(patient):
 
     for i in incomes:
         if income <= i:
-            incomeParameter = a
+            incomeParameter = i
             break
     if incomeParameter == 0: incomeParameter = -1
 
