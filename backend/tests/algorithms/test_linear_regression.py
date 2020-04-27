@@ -5,4 +5,3 @@ def test_generate_patients(patient_generator, activity_generator, communication_
     activities = activity_generator(patients, 1)
     communications = communication_generator(patients, 1)
     print(communications)
-    assert False

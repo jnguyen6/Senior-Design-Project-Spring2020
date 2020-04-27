@@ -2,12 +2,6 @@ from enum import Enum
 from app import db
 from datetime import datetime
 
-class QueueStatus(Enum):
-    NOT_STARTED = 0
-    IN_PROGRESS = 1
-    DONE = 2
-    CANCELLED = 3
-
 class QueueJob(db.Model):
     id = db.Column(db.Integer, primary_key = True)
 
@@ -15,6 +9,7 @@ class QueueJob(db.Model):
     # sqlalchemy.exc.ProgrammingError: (psycopg2.ProgrammingError) can't adapt type 'QueueStatus'
     # is thrown.
     status = db.Column(db.Integer, nullable = False, default = 0)
+    algorithm = db.Column(db.String(30), nullable=False)
     date_created = db.Column(db.DateTime, nullable = False, default = datetime.utcnow)
 
     def __repr__(self):

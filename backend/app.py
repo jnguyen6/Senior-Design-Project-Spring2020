@@ -7,13 +7,14 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'postgresql://admin:Password1!@localhost/backend')
 
+print(app.config['SQLALCHEMY_DATABASE_URI'])
+
 db = SQLAlchemy(app)
 
 from src.models import QueueJob, Cohort
 
 @app.before_first_request
 def create_tables():
-    db.drop_all()
     db.create_all()
 
 """
@@ -35,12 +36,12 @@ def populateCohorts():
         for i in range(1,6):
             ageMax = ages[i]
             ageMin = ages[i-1]
-            
+
             #income brackets
             for i in range(1,6):
                 incomeMax = incomes[i]
                 incomeMin = incomes[i-1]
-                
+
                 #Bill brackets
                 for i in range(1,7):
                     billMax = bills[i]
@@ -53,6 +54,7 @@ def populateCohorts():
                     femaleCohort = Cohort()
                     femaleCohort.initialize(ageMin, ageMax, 'F', incomeMin, incomeMax, billMin, billMax)
                     db.session.add(femaleCohort)
+
         db.session.commit()
 
 from src.blueprints.core import bp as bp_core

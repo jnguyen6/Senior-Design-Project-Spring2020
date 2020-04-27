@@ -10,55 +10,44 @@
 
         <div class="pagination">
             {% set ns = namespace(idx=0, clickedOn=0) %}
-            {% for smallList in users %}
             <a onclick="grabData({{ns.idx}}">{{ns.idx + 1}}</a>
             {% set ns.idx = ns.idx + 1 %}
-            {% endfor %}
         </div>
 
         <table id="dataTable">
 
             {% if users|length > 0 %}
-
-            {% for smallList in users %}
-
-
-                {% if smallList | length > 0 %}
                 <tr>
                     {% set ns = namespace(idx=0) %}
-                    {% for key in smallList[0].keys() %}
-                    <th onclick="sortTable({{ns.idx}})">{{ key }}</th>
-                    {% set ns.idx = ns.idx + 1 %}
+                    {% for key in users[0].keys() %}
+                        <th onclick="sortTable()">{{ key }}</th>
+                    <!-- {% set ns.idx = ns.idx + 1 %} -->
                     {% endfor %}
-                    <th>cancel?</th>
+                    <th>cohort</th>
                 </tr>
-                {% for job in smallList %}
+                {% for u in users %}
                 <tr>
                     {% set ns = namespace(status=false, id=-1) %}
-                    {% for key,value in job.items() %}
+                    {% for key,value in u.items() %}
 
-                        {% if key == "status" and value == "NOT STARTED" %}
+                        <!-- {% if key == "status" and value == "NOT STARTED" %}
                             {% set ns.status = true %}
                         {% elif key == "job ID" %}
                             {% set ns.id = value %}
-                        {% endif %}
+                        {% endif %} -->
 
                         <td>{{ value }}</td>
 
 
                     {% endfor %}
-                    {% if ns.status %}
+                    <!-- {% if ns.status %}
                     <td><button onclick="cancelJob({{ns.id}})">cancel</button></td>
                         {% set ns.status = false %}
                     {% else %}
                         <td><button disabled>cancel</button></td>
-                    {% endif %}
+                    {% endif %} -->
                 </tr>
                 {% endfor %}
-                {% else %}
-                    <p>no users</p>
-                {% endif%}
-            {% endfor %}
             {% else %}
                 <p>no users</p>
             {% endif %}
