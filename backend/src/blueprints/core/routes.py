@@ -45,10 +45,11 @@ def info_view():
     return jsonify(output)
 
 # Create a new learning job and store that in the job queue database
-@bp.route("/jobs", methods=['POST'])
+@bp.route("/jobs/<string:algorithmType>", methods=['POST'])
 def create_job():
     from src.models.QueueJob import QueueJob
     new_queue_job = QueueJob()
+    new_queue_job.algorithm = algorithm
     db.session.add(new_queue_job)
     db.session.commit()
 
@@ -75,6 +76,7 @@ def get_job(job_id):
     return {
         "jobId": job.id,
         "status": status,
+        "Algorithm":job.algorithm,
         "dateCreated": job.date_created
     }
 
@@ -115,6 +117,7 @@ def get_jobs():
         jobDict = dict()
         jobDict['jobId'] = job.id
         jobDict['status'] = get_status_string(job.status)
+        jobDict['jobAlgorithm'] = job.algorithm
         jobDict['dateCreated'] = job.date_created
         jobDictList.append(jobDict)
 
@@ -134,6 +137,7 @@ def cancel_job(job_id):
     return {
         "jobId": job.id,
         "status": 3,
+        "Algorithm":job.algorithm,
         "dateCreated": job.date_created
     }
 

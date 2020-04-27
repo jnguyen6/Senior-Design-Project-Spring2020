@@ -15,6 +15,7 @@ class QueueJob(db.Model):
     # sqlalchemy.exc.ProgrammingError: (psycopg2.ProgrammingError) can't adapt type 'QueueStatus'
     # is thrown.
     status = db.Column(db.Integer, nullable = False, default = 0)
+    algorithm = db.Column(db.String(30), nullable=False)
     date_created = db.Column(db.DateTime, nullable = False, default = datetime.utcnow)
 
     def __repr__(self):

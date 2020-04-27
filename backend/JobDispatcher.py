@@ -4,6 +4,7 @@ from app import db
 from src.models.Cohort import Cohort
 import src.algorithms.linear_regression as linear_regression
 import src.algorithms.MachineLearningVariableGetter as mlVariableGetter
+import src.algorithms.clustering as clustering
 
 
 # Pull data from the database and starts the learning algorithm
@@ -175,8 +176,12 @@ def run_background_task():
                     # And wait for a certain amount of time (Testing purposes)
                     time.sleep(3)
 
-                    # Start the learning algorithm
-                    start_learning_algorithm()
+                    
+                    if job.algorithm == 'LinearRegression':
+                        # Start the learning algorithm
+                        start_learning_algorithm()
+                    else:
+                        clustering.clusteringAlgorithm(job.clusterAlgorithm)
 
                     print("Job " + str(job.id) + " is now done.")
                     # Set job status to 2 (DONE)

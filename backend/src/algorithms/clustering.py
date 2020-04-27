@@ -1,3 +1,6 @@
+import os
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__),'../../'))
 import requests
 from numpy import unique
 from numpy import where
@@ -6,11 +9,8 @@ from sklearn.cluster import MiniBatchKMeans
 from sklearn.cluster import SpectralClustering
 from sklearn.cluster import AgglomerativeClustering
 from datetime import date
-from MachineLearningVariableGetter import getAllPatientsFreq
+from src.algorithms.MachineLearningVariableGetter import getAllPatientsFreq
 import statistics
-import os
-import sys
-sys.path.append(os.path.join(os.path.dirname(__file__),'../../'))
 from app import db
 from src.models.Cohort import Cohort
 from math import floor
@@ -24,11 +24,14 @@ algorithms = {'minibatchKmean':MiniBatchKMeans, 'agglomeration':AgglomerativeClu
 Main function, called by dispatcher and runs clustering algorithm
 populates cohort database
 """
-def clusteringAlgorithm(clusterAlgorithm):
+def clusteringAlgorithm(clusterAlgorithm, test=False, testData = None):
     cluster_size = 6
     clusterCycles = []
-    X, frequencies  = createDataSet()
 
+    if test == True:
+        X, frequencies = testData[0],testData[1]
+    else:
+        X, frequencies = createDataSet()
     model = algorithms[clusterAlgorithm](n_clusters=cluster_size)
     model.fit(X)
     yhat = model.predict(X)
@@ -37,8 +40,8 @@ def clusteringAlgorithm(clusterAlgorithm):
     #Find indices for patients per cluster
     clusterIndices = []
     for cluster in clusters:
-        indices = where(yhat == cluster)
-        clusterIndices.append(indices)
+        indices = where(yhat == cluster) 
+        clusterIndices.append(indices)    
 
     #Find shared cycle lengths
     for i in range(len(clusterIndices)):
@@ -132,6 +135,3 @@ def createDataSet():
     arrayList = np.array(prunedList)
 
     return arrayList,prunedFreqs
-
-
-clusteringAlgorithm('minibatchKmean')
