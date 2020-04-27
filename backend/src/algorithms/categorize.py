@@ -50,9 +50,11 @@ def categorizeFromBuckets(patient):
 
     cohort = Cohort.query.filter_by(gender=gender, ageMax=ageParameter, incomeMax=incomeParameter, billAmountMax=billParameter).all()
 
-    if(len(cohort) > 1):
+    if len(cohort) > 1:
         #Something has gone wrong
         return "Error"
+    elif len(cohort) == 0:
+        return 0
     
-    return cohort.cid
+    return cohort[0].cid
     

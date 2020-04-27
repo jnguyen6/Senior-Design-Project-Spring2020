@@ -3,7 +3,7 @@ from flask import request
 from flask import render_template
 from app import db
 from pytz import timezone
-from src.models.QueueJob import QueueJob
+from src.models import QueueJob
 from src.models.QueueStatus import QueueStatus
 from src.models.Communication import Communication
 from src.models.Cohort import Cohort
@@ -86,7 +86,7 @@ def get_patients_by_cohort(id):
 @bp.route("/view/jobs")
 def get_jobs():
 
-    jobs = QueueJob.query.all()
+    jobs = QueueJob.QueueJob.query.all()
     jobListUnsorted = []
     for job in jobs:
         jobDict = dict()

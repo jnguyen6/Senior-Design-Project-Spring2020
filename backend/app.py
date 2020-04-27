@@ -7,13 +7,14 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'postgresql://admin:Password1!@localhost/backend')
 
+print(app.config['SQLALCHEMY_DATABASE_URI'])
+
 db = SQLAlchemy(app)
 
 from src.models import QueueJob, Cohort
 
 @app.before_first_request
 def create_tables():
-    #db.drop_all()
     db.create_all()
 
 """
