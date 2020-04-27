@@ -7,6 +7,8 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'postgresql://admin:Password1!@localhost/backend')
 
+print(app.config['SQLALCHEMY_DATABASE_URI'])
+
 db = SQLAlchemy(app)
 
 from src.models import QueueJob, Cohort
@@ -60,6 +62,3 @@ bp_core.config(app)
 
 from src.blueprints.views import bp as bp_views
 bp_views.config(app)
-
-if __name__ == "__main__":
-    app.run()

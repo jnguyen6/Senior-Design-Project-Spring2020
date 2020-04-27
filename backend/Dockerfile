@@ -11,14 +11,6 @@ COPY Pip* /app/
 
 RUN pip install --upgrade pip && \
     pip install pipenv && \
-    pip install supervisor && \
     pipenv install
 
-RUN mkdir -p /var/log/supervisor && mkdir -p /etc/supervisor/conf.d
-ADD supervisor.conf /etc/supervisor.conf
-
-EXPOSE 5000
-
 ADD . /app
-
-CMD ["supervisord", "-c", "/etc/supervisor.conf"]

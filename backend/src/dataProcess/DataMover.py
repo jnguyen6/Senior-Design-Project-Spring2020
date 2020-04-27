@@ -1,15 +1,20 @@
-"""
-Move communications from .csv files to DB
-"""
+import os
+import sys
+
+sys.path.append(os.path.join(os.path.dirname(__file__),'../../'))
+from app import db
 import csv
 import os
-import requests
+from src.models.Patient import Patient
+from src.models.Communication import Communication
+from src.models.WebActivity import WebActivity
 
-"""
-Pareses data from csv file and collects it into nested object structure
-Tied each record to a patient ID
-"""
+
 def moveData():
+    """
+    Pareses data from csv file and collects it into nested object structure
+    Tied each record to a patient ID
+    """
     absolutePath = os.path.abspath(__file__)[:-13]
 
     rel_path = '/SponsorDataSets/demographics.csv'
@@ -29,9 +34,17 @@ def moveData():
                 address_zip = row[3]
                 family_income = row[4]
                 bill_amount = row[5]
-                r = requests.post("http://127.0.0.1:5000/patients/" + account_id + "," + gender + "," + birth_year + "," + address_zip + "," + family_income + "," + bill_amount, headers=header_content, verify=False)
-                print(r.status_code)
+                patient = Patient()
+                patient.accountId = int(account_id)
+                patient.gender = gender
+                patient.birth_year = int(birth_year)
+                patient.address_zip = address_zip
+                patient.family_income = int(family_income)
+                patient.bill_amount = int(bill_amount)
+                db.session.add(patient)
+
                 plineCount += 1
+        db.session.commit()
 
 
     rel_path = '/SponsorDataSets/commuications.csv'
@@ -49,10 +62,16 @@ def moveData():
                 notification_date_time = row[1]
                 method = row[2]
                 notification_type = row[3]
-                uidStr = str(clineCount)
-                r = requests.post("http://127.0.0.1:5000/communications/" + uidStr + "," + account_id + "," + notification_date_time + "," + method + "," + notification_type, headers=header_content, verify=False)
-                print(r.status_code)
+                uid = clineCount
+                comm = Communication()
+                comm.accountId = int(account_id)
+                comm.notification_date_time = notification_date_time
+                comm.method = method
+                comm.notification_type = notification_type
+                comm.uid = int(uid)
+                db.session.add(comm)
                 clineCount += 1
+        db.session.commit()
     #return
 
     rel_path = '/SponsorDataSets/website activity.csv'
@@ -70,16 +89,16 @@ def moveData():
                 event_id = row[1]
                 bill_status = row[2]
                 action_date = row[3]
-                uid = str(wlineCount)
-                r = requests.post("http://127.0.0.1:5000/web activities/" + uid + "," + account_id + "," + event_id + "," + bill_status + "," + action_date, headers=header_content, verify=False)
-                print(r.status_code)
+                uid = wlineCount
+                web_act = WebActivity()
+                web_act.uid = uid
+                web_act.accountId = int(account_id)
+                web_act.eventId = int(event_id)
+                web_act.billStatus = bill_status
+                web_act.actionDate = action_date
+                db.session.add(web_act)
                 wlineCount += 1
+        db.session.commit()
 
-        return
-
-
-"""
-Main function of program
-"""
 if __name__ == "__main__":
     moveData()
