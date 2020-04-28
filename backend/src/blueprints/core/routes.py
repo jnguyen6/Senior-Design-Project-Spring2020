@@ -45,8 +45,8 @@ def info_view():
     return jsonify(output)
 
 # Create a new learning job and store that in the job queue database
-@bp.route("/jobs/<string:algorithmType>", methods=['POST'])
-def create_job():
+@bp.route("/jobs/<string:algorithm", methods=['POST'])
+def create_job(algorithm):
     from src.models.QueueJob import QueueJob
     new_queue_job = QueueJob()
     new_queue_job.algorithm = algorithm

@@ -3,11 +3,12 @@ import sys
 from app import db
 from src.models.Cohort import Cohort
 import src.algorithms.linear_regression as linear_regression
+import src.algorithms.logistic_regression as logistic_regression
 import src.algorithms.machine_learning_variable_getter as ml_variable_getter
 import src.algorithms.clustering as clustering
 
-
-def start_learning_algorithm():
+# Run the linear regression algorithm
+def run_linear_regression():
     """
     Starts the learning algorithm from data in the database
     """
@@ -140,6 +141,76 @@ def start_learning_algorithm():
         db.session.add(cohort)
     db.session.commit()
 
+# Run the logistic regression algorithm
+def run_logistic_regression():
+    print("Retrieving variables for: patient demographics (X1), frequency of communication methods (X2),"
+          " and success/failures for patients (Y)...")
+    # X1 variables (patient demographics)
+    patient_age_list = ml_variable_getter.getAllPatientsAgeInOrder()
+    patient_income_list = ml_variable_getter.getAllPatientsFamilyIncome()
+    patient_gender_list = ml_variable_getter.getAllPatientsGenderInOrder()
+    patient_bill_list = ml_variable_getter.getAllPatientsBillAmount()
+
+    # Convert patient gender list to numeric representation of gender (ex.: M = 1, F = 2)
+    patient_gender_numeric_list=[]
+    for gender in patient_gender_list:
+        if gender == "M":
+            patient_gender_numeric_list.append(1)
+        elif gender == "F":
+            patient_gender_numeric_list.append(2)
+
+    # X2 variables (freq. of communication methods)
+    freq_email_list = ml_variable_getter.getAllPatientsFreq("EMAIL")
+    freq_paper_list = ml_variable_getter.getAllPatientsFreq("PAPER")
+    freq_text_list = ml_variable_getter.getAllPatientsFreq("TEXT")
+
+    # Y variables (successes and failures of patients paying their bills)
+    succ_list = ml_variable_getter.getAllPatientsSuccess()
+
+    # If success score > 0, then the patient paid their bill (1). Otherwise, the patient did not pay their bill (0)
+    y_list = []
+    for successScore in succ_list:
+        if successScore > 0:
+            y_list.append(1)
+        else:
+            y_list.append(0)
+
+    # Check and make sure the length of the independent variables and dependent variables are the same
+    if not (len(patient_age_list) == len(patient_gender_list) and len(patient_gender_numeric_list) == len(patient_income_list)
+            and len(patient_age_list) == len(patient_income_list) and len(patient_age_list) == len(y_list)):
+        print("The list of patient variables, frequency of communication methods, and successes must be equal. Exiting program.")
+        sys.exit()
+    else:
+        # Combine the X1 and X2 variables into one list of independent variables.
+        x_list = []
+        curr_idx = 0
+        x_list_len = len(patient_age_list)
+        while curr_idx < x_list_len:
+            x_variables = [patient_age_list[curr_idx], patient_income_list[curr_idx],
+                           patient_gender_numeric_list[curr_idx], patient_bill_list[curr_idx],
+                           freq_email_list[curr_idx], freq_paper_list[curr_idx], freq_text_list[curr_idx]]
+            x_list.append(x_variables)
+            curr_idx += 1
+
+        print("x_list length: " + str(len(x_list)))
+        print("y_list length: " + str(len(y_list)))
+
+        # Start running the learning algorithm (logistic regression)
+        print("Running logistic regression algorithm...")
+        logistic_regression.logisticRegression(x_list, y_list)
+        print("Logistic regression algorithm complete.")
+
+# Starts running the learning algorithm. The available learning algorithms are the following:
+# Linear Regression, Logistic Regression, and Clustering
+def start_learning_algorithm(job):
+    # Check what learning algorithm is selected to run
+    if job.algorithm == "linear_regression":
+        run_linear_regression()
+    elif job.algorithm == "logistic_regression":
+        run_logistic_regression()
+    else:
+        clustering.clusteringAlgorithm(job.algorithm)
+
 def run_background_task():
     """
     Continuously checks the database and updates job statuses
@@ -169,12 +240,8 @@ def run_background_task():
                     job.status = 1
                     db.session.commit()
 
-                    
-                    if job.algorithm == 'LinearRegression':
-                        # Start the learning algorithm
-                        start_learning_algorithm()
-                    else:
-                        clustering.clusteringAlgorithm(job.clusterAlgorithm)
+                    # Start the learning algorithm
+                    start_learning_algorithm(job)
 
                     print("Job " + str(job.id) + " is now done.")
                     # Set job status to 2 (DONE)
