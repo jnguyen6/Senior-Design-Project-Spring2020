@@ -1,21 +1,17 @@
 <html>
     <head>
-        <title>List of Users</title>
+        <title>Find a Cohort</title>
         <link rel= "stylesheet" type= "text/css" href= "/static/style.css" media="all">
-        <script type=text/javascript src="/static/table.js"></script>
+        <script type=text/javascript src="/static/script.js"></script>
     </head>
 
     <body>
-        <h1>User</h1>
+        <h1>Find a Cohort</h1>
 
         <p><a href="/">Back to Main</a></p>
 
         <h2>User Information</h2>
         <form action = "/view/user" method = "POST" enctype="application/json">
-          <!-- <div hidden >
-            <label hidden>patient ID</label>
-            <input hidden type="number" name="id" value=0>
-          </div> -->
           <div>
             <label>date of birth</label>
             <input type="date" name="fullDateOfBirth" value="{{cohort.fullDateOfBirth}}">
@@ -49,21 +45,5 @@
             <input type="submit" value="find cohort info"/>
           </div>
         </form>
-
-        <div></div>
-
-        <h2>Cohort Breakdown</h2>
-        <div>
-          <label>Number of papers</label>
-          <input disabled value="{{cohort.paperID}}">
-        </div>
-        <div>
-          <label>Number of texts</label>
-          <input disabled value="{{cohort.textID}}">
-        </div>
-        <div>
-          <label>Number of e-mails</label>
-          <input disabled value="{{cohort.emailID}}">
-        </div>
     </body>
 </html>

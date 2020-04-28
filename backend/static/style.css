@@ -28,11 +28,10 @@ form {
 div {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   display: table-row;
-  padding: 5pt;
 }
 label {
   display: table-cell;
-  padding: 5pt;
+  padding: 10pt;
 }
 input {
   display: table-cell;

@@ -54,7 +54,7 @@ def index():
 def get_cohort_by_user_stats():
   if request.method == 'POST':
       form = request.form
-      print(form)
+      # print(form)
       patientDict = dict()
       patientDict['id'] = 0
       # print(form['fullDateOfBirth'])
@@ -75,23 +75,38 @@ def get_cohort_by_user_stats():
       patientDict['emailID'] = cID[2]
       patientDict['fullDateOfBirth'] = form['fullDateOfBirth']
 
-      return render_template("user-form.html", cohort=patientDict)
-      # return render_template("cohorts.html", cohortList=result)
+      return render_template("user-form-single.html", cohort=patientDict)
   return render_template("user-form.html", cohort="")
 
 @bp.route("/view/cohorts")
 def get_cohorts_view():
+    c = Cohort.query.all()
+    # print(c)
+    cohortSet = set()
+    for cohort in c:
+        cohortSet.add(cohort.cid)
+    cohortList = []
+    for cohortID in cohortSet:
+        cDict = dict()
+        cDict['cohort ID'] = cohortID
+        cID = str(cohortID)
+        cDict['papers per cycle'] = cID[0]
+        cDict['texts per cycle'] = cID[1]
+        cDict['emails per cycle'] = cID[2]
+        cohortList.append(cDict)
+    # print(result)
+    # cohortList = {'cohort ID' : cohortSet}
+    cohortList = sorted(cohortList, key=lambda k:k['cohort ID'])
+    # print(cohortList)
+    return render_template('cohorts.html', cohorts=cohortList)
 
-    # result = get_cohorts()
-    c = Cohort.query(Cohort.cid)
-    print(c)
+@bp.route("/view/cohorts/<int:cohortID>")
+def get_patients_by_cohort(cohortID):
+    c = Cohort.query.filter_by(cid=cohortID).all()
     cohortList = []
     for cohort in c:
         cDict = dict()
-        cDict['cohort ID'] = cohort.cid
-        cDict['papers per cycle'] = cohort.paper
-        cDict['texts per cycle'] = cohort.text
-        cDict['emails per cycle'] = cohort.email
+        # cDict['cohort ID'] = cohort.cid
         cDict['minimum age'] = cohort.ageMin
         cDict['maximum age'] = cohort.ageMax
         cDict['gender'] = cohort.gender
@@ -100,29 +115,12 @@ def get_cohorts_view():
         cDict['minimum bill amount'] = cohort.billAmountMin
         cDict['maximum bill amount'] = cohort.billAmountMax
         cohortList.append(cDict)
-    # print(result)
 
-    return render_template('cohorts.html', cohorts=cohortList)
-
-@bp.route("/view/cohorts/<int:idx>")
-def get_patients_by_cohort(id):
-
-    c = Cohort.query.all()
-    cohortList = []
-    # for cohort in c:
-    #     cDict = dict()
-    #     cDict['cohort ID'] = cohort.cid
-    #     cDict['paper'] = cohort.paper
-    #     cDict['text'] = cohort.text
-    #     cDict['email'] = cohort.email
-    #     cohortList.append(cDict)
-
-    return render_template('cohorts.html', cohorts=cohortList)
+    return render_template('cohorts-single.html', cohortID=cohortID, cohorts=cohortList)
 
 # Retrieve a list of jobs currently in the job queue database
 @bp.route("/view/jobs")
 def get_jobs():
-
     jobs = QueueJob.query.all()
     jobListUnsorted = []
     for job in jobs:
@@ -132,9 +130,9 @@ def get_jobs():
         jobDict['job algorithm'] = job.algorithm
         jobDict['date created'] = get_pretty_date(job.date_created)
         jobListUnsorted.append(jobDict)
-    # jobList.sort()
+
     jobList = sorted(jobListUnsorted, key=lambda k:k['job ID'])
-    # {k: v for k,v in sorted(jobList.items(), key=lambda item:item[1])}
+
     return render_template('jobs.html', jobs=jobList)
 
 def get_status(key):

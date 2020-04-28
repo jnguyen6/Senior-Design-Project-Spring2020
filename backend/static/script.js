@@ -77,3 +77,7 @@ async function cancelJob(id) {
     });
     window.location.replace("/view/jobs");
 }
+
+function expandCohort(cohortID) {
+    window.location.replace("/view/cohorts/" + cohortID)
+}
