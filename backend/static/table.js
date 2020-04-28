@@ -77,13 +77,3 @@ async function cancelJob(id) {
     });
     window.location.replace("/view/jobs");
 }
-
-// async function viewPatients(id) {
-//     console.log("received " + id)
-//     await fetch('/jobs/view/patients/' + id, {
-//         method: 'GET',
-//         headers: {
-//             'Content-type': 'application/json; charset=UTF-8'
-//         }
-//     });
-// }
