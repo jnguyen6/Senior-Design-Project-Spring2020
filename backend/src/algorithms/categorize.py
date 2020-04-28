@@ -3,6 +3,7 @@ File that contains methods for categorizing patients
 """
 from app import db
 from src.models.Cohort import Cohort
+from datetime import date
 
 
 """
@@ -18,7 +19,7 @@ Categorizes patient based on existing buckets
 Doesn't run algorithm
 """
 def categorizeFromBuckets(patient):
-    age = 2020 - patient['dateOfBirth']
+    age = date.today().year - patient['dateOfBirth']
     gender = patient['gender']
     income = patient['income']
     bill = patient['billAmount']
@@ -38,7 +39,7 @@ def categorizeFromBuckets(patient):
 
     for i in incomes:
         if income <= i:
-            incomeParameter = a
+            incomeParameter = i
             break
     if incomeParameter == 0: incomeParameter = -1
 
@@ -50,9 +51,11 @@ def categorizeFromBuckets(patient):
 
     cohort = Cohort.query.filter_by(gender=gender, ageMax=ageParameter, incomeMax=incomeParameter, billAmountMax=billParameter).all()
 
-    if(len(cohort) > 1):
+    if len(cohort) > 1:
         #Something has gone wrong
         return "Error"
+    elif len(cohort) == 0:
+        return 0
     
-    return cohort.cid
+    return cohort[0].cid
     

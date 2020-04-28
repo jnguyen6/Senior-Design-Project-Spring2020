@@ -3,21 +3,27 @@ import sys
 from app import db
 from src.models.Cohort import Cohort
 import src.algorithms.linear_regression as linear_regression
-import src.algorithms.MachineLearningVariableGetter as mlVariableGetter
+import src.algorithms.logistic_regression as logistic_regression
+import src.algorithms.machine_learning_variable_getter as ml_variable_getter
+import src.algorithms.clustering as clustering
 
+# Run the linear regression algorithm
+def run_linear_regression():
+    """
+    Starts the learning algorithm from data in the database
+    """
 
-# Pull data from the database and starts the learning algorithm
-def start_learning_algorithm():
     # Lists of b0, b1, and b2 variables
     b0_list = []
     b1_list = []
     b2_list = []
 
     # X1 variables (patient demographics)
-    patient_age_list = mlVariableGetter.getAllPatientsAgeInOrder()
-    patient_income_list = mlVariableGetter.getAllPatientsFamilyIncome()
-    patient_gender_list = mlVariableGetter.getAllPatientsGenderInOrder()
-    patient_bill_list = mlVariableGetter.getAllPatientsBillAmount()
+    patient_age_list = ml_variable_getter.get_all_patients_age()
+    patient_income_list = ml_variable_getter.get_all_patients_family_income()
+    patient_gender_list = ml_variable_getter.get_all_patients_gender()
+    patient_bill_list = ml_variable_getter.get_all_patients_bill_amount()
+
     # Convert patient gender list to numeric representation of gender (ex.: M = 1, F = 2)
     patient_gender_numeric_list = []
     for gender in  patient_gender_list:
@@ -27,86 +33,78 @@ def start_learning_algorithm():
             patient_gender_numeric_list.append(2)
 
     # X2 variables (freq. of communication methods)
-    freq_paper_list = mlVariableGetter.getAllPatientsFreq("PAPER")
-    freq_text_list = mlVariableGetter.getAllPatientsFreq("TEXT")
-    freq_email_list = mlVariableGetter.getAllPatientsFreq("EMAIL")
+    freq_paper_list = ml_variable_getter.get_all_patients_frequency("PAPER")
+    freq_text_list = ml_variable_getter.get_all_patients_frequency("TEXT")
+    freq_email_list = ml_variable_getter.get_all_patients_frequency("EMAIL")
 
     # Y variables (successes and failures of patients paying their bills)
-    succ_list = mlVariableGetter.getAllPatientsSuccess()
+    succ_list = ml_variable_getter.get_all_patients_success()
 
     # Start running the learning algorithm (linear regression) and append b0, b1, and b2 values to appropriate list
 
     # Patient age and email
-    prediction_variable_list = linear_regression.multiLinearRegression(succ_list, patient_age_list, freq_email_list)
+    prediction_variable_list = linear_regression.mutli_linear_regression(succ_list, patient_age_list, freq_email_list)
     b0_list.append(prediction_variable_list[0])
     b1_list.append(prediction_variable_list[1])
     b2_list.append(prediction_variable_list[2])
     # Patient age and paper
-    prediction_variable_list = linear_regression.multiLinearRegression(succ_list, patient_age_list, freq_paper_list)
+    prediction_variable_list = linear_regression.mutli_linear_regression(succ_list, patient_age_list, freq_paper_list)
     b0_list.append(prediction_variable_list[0])
     b1_list.append(prediction_variable_list[1])
     b2_list.append(prediction_variable_list[2])
     # Patient age and text
-    prediction_variable_list = linear_regression.multiLinearRegression(succ_list, patient_age_list, freq_text_list)
+    prediction_variable_list = linear_regression.mutli_linear_regression(succ_list, patient_age_list, freq_text_list)
     b0_list.append(prediction_variable_list[0])
     b1_list.append(prediction_variable_list[1])
     b2_list.append(prediction_variable_list[2])
 
     # Patient income and email
-    prediction_variable_list = linear_regression.multiLinearRegression(succ_list, patient_income_list, freq_email_list)
+    prediction_variable_list = linear_regression.mutli_linear_regression(succ_list, patient_income_list, freq_email_list)
     b0_list.append(prediction_variable_list[0])
     b1_list.append(prediction_variable_list[1])
     b2_list.append(prediction_variable_list[2])
     # Patient income and paper
-    prediction_variable_list = linear_regression.multiLinearRegression(succ_list, patient_income_list, freq_paper_list)
+    prediction_variable_list = linear_regression.mutli_linear_regression(succ_list, patient_income_list, freq_paper_list)
     b0_list.append(prediction_variable_list[0])
     b1_list.append(prediction_variable_list[1])
     b2_list.append(prediction_variable_list[2])
     # Patient income and text
-    prediction_variable_list = linear_regression.multiLinearRegression(succ_list, patient_income_list, freq_text_list)
+    prediction_variable_list = linear_regression.mutli_linear_regression(succ_list, patient_income_list, freq_text_list)
     b0_list.append(prediction_variable_list[0])
     b1_list.append(prediction_variable_list[1])
     b2_list.append(prediction_variable_list[2])
 
     # Patient gender and email
-    prediction_variable_list = linear_regression.multiLinearRegression(succ_list, patient_gender_numeric_list, freq_email_list)
+    prediction_variable_list = linear_regression.mutli_linear_regression(succ_list, patient_gender_numeric_list, freq_email_list)
     b0_list.append(prediction_variable_list[0])
     b1_list.append(prediction_variable_list[1])
     b2_list.append(prediction_variable_list[2])
     # Patient gender and paper
-    prediction_variable_list = linear_regression.multiLinearRegression(succ_list, patient_gender_numeric_list, freq_paper_list)
+    prediction_variable_list = linear_regression.mutli_linear_regression(succ_list, patient_gender_numeric_list, freq_paper_list)
     b0_list.append(prediction_variable_list[0])
     b1_list.append(prediction_variable_list[1])
     b2_list.append(prediction_variable_list[2])
     # Patient gender and text
-    prediction_variable_list = linear_regression.multiLinearRegression(succ_list, patient_gender_numeric_list, freq_text_list)
+    prediction_variable_list = linear_regression.mutli_linear_regression(succ_list, patient_gender_numeric_list, freq_text_list)
     b0_list.append(prediction_variable_list[0])
     b1_list.append(prediction_variable_list[1])
     b2_list.append(prediction_variable_list[2])
 
     # Patient bill amount and email
-    prediction_variable_list = linear_regression.multiLinearRegression(succ_list, patient_bill_list, freq_email_list)
+    prediction_variable_list = linear_regression.mutli_linear_regression(succ_list, patient_bill_list, freq_email_list)
     b0_list.append(prediction_variable_list[0])
     b1_list.append(prediction_variable_list[1])
     b2_list.append(prediction_variable_list[2])
     # Patient bill amount and paper
-    prediction_variable_list = linear_regression.multiLinearRegression(succ_list, patient_bill_list, freq_paper_list)
+    prediction_variable_list = linear_regression.mutli_linear_regression(succ_list, patient_bill_list, freq_paper_list)
     b0_list.append(prediction_variable_list[0])
     b1_list.append(prediction_variable_list[1])
     b2_list.append(prediction_variable_list[2])
     # Patient bill amount and text
-    prediction_variable_list = linear_regression.multiLinearRegression(succ_list, patient_bill_list, freq_text_list)
+    prediction_variable_list = linear_regression.mutli_linear_regression(succ_list, patient_bill_list, freq_text_list)
     b0_list.append(prediction_variable_list[0])
     b1_list.append(prediction_variable_list[1])
     b2_list.append(prediction_variable_list[2])
-
-    # Print out the b0, b1, and b2 lists
-    print("b0 list: ")
-    print(b0_list)
-    print("b1 list: ")
-    print(b1_list)
-    print("b2 list: ")
-    print(b2_list)
 
     # TODO Assign communication cycles to each cohort using b0, b1, and b2
     # TODO Come up with max communication frequency (ex.: the max # of mails this patient should get is 10)
@@ -129,7 +127,7 @@ def start_learning_algorithm():
 
         # Use b0, b1, and b2 to create linear regression functions and predict best cycle
         # of communication methods for each cohort of patients
-        comm_cycle = linear_regression.analyzePatient(age, income, gender, bill_amount, cons, max_com_freq, b0_list, b1_list, b2_list)
+        comm_cycle = linear_regression.analyze_patient(age, income, gender, bill_amount, cons, max_com_freq, b0_list, b1_list, b2_list)
         cohort.email = int(comm_cycle[0])
         cohort.paper = int(comm_cycle[1])
         cohort.text = int(comm_cycle[2])
@@ -140,18 +138,87 @@ def start_learning_algorithm():
         #      If paper = 2, text = 1, email = 0, then cid = 210
         cohort.cid = int(str(cohort.paper) + str(cohort.text) + str(cohort.email))
 
-        print("Cohort: ")
-        print(cohort)
         db.session.add(cohort)
     db.session.commit()
 
+# Run the logistic regression algorithm
+def run_logistic_regression():
+    print("Retrieving variables for: patient demographics (X1), frequency of communication methods (X2),"
+          " and success/failures for patients (Y)...")
+    # X1 variables (patient demographics)
+    patient_age_list = ml_variable_getter.getAllPatientsAgeInOrder()
+    patient_income_list = ml_variable_getter.getAllPatientsFamilyIncome()
+    patient_gender_list = ml_variable_getter.getAllPatientsGenderInOrder()
+    patient_bill_list = ml_variable_getter.getAllPatientsBillAmount()
 
-# Runs the background task of continuously checking the database and updating
-# the job statuses.
+    # Convert patient gender list to numeric representation of gender (ex.: M = 1, F = 2)
+    patient_gender_numeric_list=[]
+    for gender in patient_gender_list:
+        if gender == "M":
+            patient_gender_numeric_list.append(1)
+        elif gender == "F":
+            patient_gender_numeric_list.append(2)
+
+    # X2 variables (freq. of communication methods)
+    freq_email_list = ml_variable_getter.getAllPatientsFreq("EMAIL")
+    freq_paper_list = ml_variable_getter.getAllPatientsFreq("PAPER")
+    freq_text_list = ml_variable_getter.getAllPatientsFreq("TEXT")
+
+    # Y variables (successes and failures of patients paying their bills)
+    succ_list = ml_variable_getter.getAllPatientsSuccess()
+
+    # If success score > 0, then the patient paid their bill (1). Otherwise, the patient did not pay their bill (0)
+    y_list = []
+    for successScore in succ_list:
+        if successScore > 0:
+            y_list.append(1)
+        else:
+            y_list.append(0)
+
+    # Check and make sure the length of the independent variables and dependent variables are the same
+    if not (len(patient_age_list) == len(patient_gender_list) and len(patient_gender_numeric_list) == len(patient_income_list)
+            and len(patient_age_list) == len(patient_income_list) and len(patient_age_list) == len(y_list)):
+        print("The list of patient variables, frequency of communication methods, and successes must be equal. Exiting program.")
+        sys.exit()
+    else:
+        # Combine the X1 and X2 variables into one list of independent variables.
+        x_list = []
+        curr_idx = 0
+        x_list_len = len(patient_age_list)
+        while curr_idx < x_list_len:
+            x_variables = [patient_age_list[curr_idx], patient_income_list[curr_idx],
+                           patient_gender_numeric_list[curr_idx], patient_bill_list[curr_idx],
+                           freq_email_list[curr_idx], freq_paper_list[curr_idx], freq_text_list[curr_idx]]
+            x_list.append(x_variables)
+            curr_idx += 1
+
+        print("x_list length: " + str(len(x_list)))
+        print("y_list length: " + str(len(y_list)))
+
+        # Start running the learning algorithm (logistic regression)
+        print("Running logistic regression algorithm...")
+        logistic_regression.logisticRegression(x_list, y_list)
+        print("Logistic regression algorithm complete.")
+
+# Starts running the learning algorithm. The available learning algorithms are the following:
+# Linear Regression, Logistic Regression, and Clustering
+def start_learning_algorithm(job):
+    # Check what learning algorithm is selected to run
+    if job.algorithm == "linear_regression":
+        run_linear_regression()
+    elif job.algorithm == "logistic_regression":
+        run_logistic_regression()
+    else:
+        clustering.clusteringAlgorithm(job.algorithm)
+
 def run_background_task():
+    """
+    Continuously checks the database and updates job statuses
+    """
     print("Background task started.")
     try:
         while True:
+            print("Scanning")
             time.sleep(3)
             from src.models.QueueJob import QueueJob
             jobs = QueueJob.query.all()
@@ -172,11 +239,9 @@ def run_background_task():
                     # If the job has not started yet, set the status to 1 (IN_PROGRESS)
                     job.status = 1
                     db.session.commit()
-                    # And wait for a certain amount of time (Testing purposes)
-                    time.sleep(3)
 
                     # Start the learning algorithm
-                    start_learning_algorithm()
+                    start_learning_algorithm(job)
 
                     print("Job " + str(job.id) + " is now done.")
                     # Set job status to 2 (DONE)

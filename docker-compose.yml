@@ -3,7 +3,7 @@ version: '3.7'
 services: 
     backend:
         build: ./backend
-        command: flask run --host 0.0.0.0
+        command: pipenv run flask run --host 0.0.0.0
         volumes:
             - ./backend/:/app/
         ports:
@@ -11,6 +11,17 @@ services:
         environment:
             - FLASK_APP=./app.py
             - DATABASE_URL=postgresql://admin:Password1!@db:5432/backend
+        depends_on: 
+            - db
+    job_dispatcher:
+        build: ./backend
+        command: pipenv run python JobDispatcher.py
+        volumes:
+            - ./backend/:/app/
+        environment:
+            - DATABASE_URL=postgresql://admin:Password1!@db:5432/backend
+        depends_on: 
+            - backend
     db:
         image: postgres:12-alpine
         volumes:

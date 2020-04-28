@@ -13,6 +13,7 @@ from src.models.Communication import Communication
 from src.models.QueueJob import QueueJob
 from src.models.QueueStatus import QueueStatus
 
+
 # show the landing page view when accessing the app
 @bp.route("/")
 def index():
@@ -128,6 +129,7 @@ def get_jobs():
         jobDict = dict()
         jobDict['job ID'] = job.id
         jobDict['status'] = get_status(job.status)
+        jobDict['job algorithm'] = job.algorithm
         jobDict['date created'] = get_pretty_date(job.date_created)
         jobListUnsorted.append(jobDict)
     # jobList.sort()
@@ -136,10 +138,8 @@ def get_jobs():
     return render_template('jobs.html', jobs=jobList)
 
 def get_status(key):
-
     return QueueStatus(key).name.replace('_', ' ')
 
 def get_pretty_date(oldDate):
-
     newDate = timezone('US/Eastern').fromutc(oldDate)
     return newDate.strftime("%d %b %Y at %H:%M")

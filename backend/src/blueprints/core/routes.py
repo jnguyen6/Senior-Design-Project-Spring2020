@@ -8,6 +8,7 @@ from src.models.WebActivity import WebActivity
 from src.models.Patient import Patient
 import json
 from src.algorithms.categorize import categorizeFromBuckets
+from datetime import date
 
 def get_status_string(status_int):
     if status_int is 0:
@@ -44,10 +45,11 @@ def info_view():
     return jsonify(output)
 
 # Create a new learning job and store that in the job queue database
-@bp.route("/jobs", methods=['POST'])
-def create_job():
+@bp.route("/jobs/<string:algorithm", methods=['POST'])
+def create_job(algorithm):
     from src.models.QueueJob import QueueJob
     new_queue_job = QueueJob()
+    new_queue_job.algorithm = algorithm
     db.session.add(new_queue_job)
     db.session.commit()
 
@@ -74,6 +76,7 @@ def get_job(job_id):
     return {
         "jobId": job.id,
         "status": status,
+        "Algorithm":job.algorithm,
         "dateCreated": job.date_created
     }
 
@@ -114,6 +117,7 @@ def get_jobs():
         jobDict = dict()
         jobDict['jobId'] = job.id
         jobDict['status'] = get_status_string(job.status)
+        jobDict['jobAlgorithm'] = job.algorithm
         jobDict['dateCreated'] = job.date_created
         jobDictList.append(jobDict)
 
@@ -133,6 +137,7 @@ def cancel_job(job_id):
     return {
         "jobId": job.id,
         "status": 3,
+        "Algorithm":job.algorithm,
         "dateCreated": job.date_created
     }
 
@@ -177,182 +182,28 @@ def get_cohorts():
     #TODO add database flag so that this can update status as retrieved
     cohorts = Cohort.query.all()
     
-    condensedCohorts = createCohortList(cohorts)
+    condensedCohorts = create_cohort_list(cohorts)
     return build_json_response(json.dumps(condensedCohorts, default=str))
   
-"""
-Helper function for returning cohorts
-Finds all unique cycles and the returns them as a list of dictionaries
-Dict has cycle length attributes
-"""
-def createCohortList(cohorts):
+
+def create_cohort_list(cohorts):
+    """
+    Helper function for returning cohorts
+    Finds all unique cycles and the returns them as a list of dictionaries
+    Dict has cycle length attributes
+    :param cohorts: The list of cohorts
+    :return A list of dictionaries that contain all cycles in each cohort
+    """
     condensedCohorts = set()
     for coh in cohorts:
         condensedCohorts.add(coh.cid)
 
     structuredResponse = []
     for coh in condensedCohorts:
-        newdict = dict()
-        newdict['cohortId'] = coh.cid
-        newdict['paper'] = coh.paper
-        newdict['text'] = coh.text
-        newdict['email'] = coh.email
-        structuredResponse.append(newdict)
+        new_dict = dict()
+        new_dict['cohortId'] = coh.cid
+        new_dict['paper'] = coh.paper
+        new_dict['text'] = coh.text
+        new_dict['email'] = coh.email
+        structuredResponse.append(new_dict)
     return structuredResponse
-
-# Enter a new created cohort into DB (for initializing the cohorts for further use)
-@bp.route("/patient/cohorts/<int:cid> <int:paper> <int:text> <int:email>", methods=['POST'])
-def create_cohort(cid, paper, text, email):
-    newCohort = Cohort()
-    newCohort.cid = cid
-    newCohort.paper = paper
-    newCohort.text = text
-    newCohort.email = email
-    db.session.add(newCohort)
-    db.session.commit()
-
-    return {
-        "cohortId": newCohort.cid,
-        "freqPaper": newCohort.paper,
-        "freqText": newCohort.text,
-        "freqEmail": newCohort.email
-    }
-
-# Create and enter a new communication into DB
-@bp.route("/communications/<int:uid>,<int:account_id>,<string:notification_date_time>,<string:method>,<string:notification_type>", methods=['POST'])
-def create_communication(uid, account_id, notification_date_time, method, notification_type):
-    newCom = Communication()
-    newCom.uid = uid
-    newCom.accountId = account_id
-    newCom.notification_date_time = notification_date_time
-    newCom.method = method
-    newCom.notification_type = notification_type
-    db.session.add(newCom)
-    db.session.commit()
-
-    return {
-        "Unique ID": newCom.uid,
-        "Account ID": newCom.accountId,
-        "Notification Date Time": newCom.notification_date_time,
-        "Delivery Method": newCom.method,
-        "Notification Type": newCom.notification_type
-    }
-
-"""
-# Get all current communications from DB
-@bp.route("/communications")
-def get_all_communications():
-    coms = Communication.query.all()
-    comList = []
-    for com in coms:
-        comDict = dict()
-        comDict['uid'] = com.uid
-        comDict['accountId'] = com.accountId
-        comDict['notification_date_time'] = com.notification_date_time
-        comDict['method'] = com.method
-        comDict['notification_type'] = com.notification_type
-        comList.append(comDict)
-        return build_json_response(json.dumps(comList, default=str))
-"""
-
-# Create and enter new web activity to DB
-@bp.route("/web activities/<int:uid>,<int:account_id>,<int:event_id>,<string:bill_status>,<string:action_date>", methods=['POST'])
-def create_web_activity(uid, account_id, event_id, bill_status, action_date):
-    newWebActivity = WebActivity()
-    newWebActivity.uid = uid
-    newWebActivity.accountId = account_id
-    newWebActivity.eventId = event_id
-    newWebActivity.billStatus = bill_status
-    newWebActivity.actionDate = action_date
-    db.session.add(newWebActivity)
-    db.session.commit()
-
-    return {
-        "Unique ID": newWebActivity.uid,
-        "Account ID": newWebActivity.accountId,
-        "Event ID": newWebActivity.eventId,
-        "Bill Status": newWebActivity.billStatus,
-        "Action Date": newWebActivity.actionDate
-    }
-
-# Get birth year of all patients
-@bp.route("/patients/birth_year", methods=['GET'])
-def get_patients_birth_year():
-    from src.models.Patient import Patient
-    patients = Patient.query.all()
-    birthYearList = []
-    for patient in patients:
-        birthYearList.append(patient.birth_year)
-    return build_json_response(json.dumps(birthYearList, default=str))
-
-# Get gender of all patients
-@bp.route("/patients/gender", methods=['GET'])
-def get_patients_gender():
-    from src.models.Patient import Patient
-    patients = Patient.query.all()
-    genderList = []
-    for patient in patients:
-        genderList.append(patient.gender)
-    return build_json_response(json.dumps(genderList, default=str))
-
-# Get family income of all patients
-@bp.route("/patients/family_income", methods=['GET'])
-def get_patients_family_income():
-    from src.models.Patient import Patient
-    patients = Patient.query.all()
-    incomeList = []
-    for patient in patients:
-        incomeList.append(patient.family_income)
-    return build_json_response(json.dumps(incomeList, default=str))
-
-# Get bill amount of all patients
-@bp.route("/patients/bill_amount", methods=['GET'])
-def get_patients_bill_amount():
-    from src.models.Patient import Patient
-    patients = Patient.query.all()
-    billList = []
-    for patient in patients:
-        billList.append(patient.bill_amount)
-    return build_json_response(json.dumps(billList, default=str))
-
-# Get account id of all patients (for iterating patient list and assign communication frequency variable)
-@bp.route("/patients/account_id", methods=['GET'])
-def get_patients_account_id():
-    from src.models.Patient import Patient
-    patients = Patient.query.all()
-    idList = []
-    for patient in patients:
-        idList.append(patient.accountId)
-    return build_json_response(json.dumps(idList, default=str))
-
-# Get all communications
-@bp.route("/communications", methods=['GET'])
-def get_all_communications():
-    from src.models.Communication import Communication
-    coms = Communication.query.all()
-    comList = []
-    for com in coms:
-        comDict = dict()
-        comDict['uid'] = com.uid
-        comDict['account_id'] = com.accountId
-        comDict['notification_date_time'] = com.notification_date_time
-        comDict['method'] = com.method
-        comDict['notification_type'] = com.notification_type
-        comList.append(comDict)
-    return build_json_response(json.dumps(comList, default=str))
-
-# Get all website activities
-@bp.route("/web activities", methods=['GET'])
-def get_all_web_activities():
-    from src.models.WebActivity import WebActivity
-    webActs = WebActivity.query.all()
-    webActList = []
-    for webAct in webActs:
-        webActDict = dict()
-        webActDict['uid'] = webAct.uid
-        webActDict['account_id'] = webAct.accountId
-        webActDict['eventId'] = webAct.eventId
-        webActDict['billStatus'] = webAct.billStatus
-        webActDict['actionDate'] = webAct.actionDate
-        webActList.append(webActDict)
-    return build_json_response(json.dumps(webActList, default=str))
