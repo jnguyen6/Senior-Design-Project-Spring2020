@@ -8,6 +8,7 @@ from src.models.WebActivity import WebActivity
 from src.models.Patient import Patient
 import json
 from src.algorithms.categorize import categorizeFromBuckets
+from datetime import date
 
 def get_status_string(status_int):
     if status_int is 0:
@@ -44,10 +45,11 @@ def info_view():
     return jsonify(output)
 
 # Create a new learning job and store that in the job queue database
-@bp.route("/jobs", methods=['POST'])
-def create_job():
+@bp.route("/jobs/<string:algorithm", methods=['POST'])
+def create_job(algorithm):
     from src.models.QueueJob import QueueJob
     new_queue_job = QueueJob()
+    new_queue_job.algorithm = algorithm
     db.session.add(new_queue_job)
     db.session.commit()
 
@@ -74,6 +76,7 @@ def get_job(job_id):
     return {
         "jobId": job.id,
         "status": status,
+        "Algorithm":job.algorithm,
         "dateCreated": job.date_created
     }
 
@@ -114,6 +117,7 @@ def get_jobs():
         jobDict = dict()
         jobDict['jobId'] = job.id
         jobDict['status'] = get_status_string(job.status)
+        jobDict['jobAlgorithm'] = job.algorithm
         jobDict['dateCreated'] = job.date_created
         jobDictList.append(jobDict)
 
@@ -133,6 +137,7 @@ def cancel_job(job_id):
     return {
         "jobId": job.id,
         "status": 3,
+        "Algorithm":job.algorithm,
         "dateCreated": job.date_created
     }
 

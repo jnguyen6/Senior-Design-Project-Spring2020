@@ -92,6 +92,7 @@ def get_jobs():
         jobDict = dict()
         jobDict['job ID'] = job.id
         jobDict['status'] = get_status(job.status)
+        jobDict['job algorithm'] = job.algorithm
         jobDict['date created'] = get_pretty_date(job.date_created)
         jobListUnsorted.append(jobDict)
     # jobList.sort()

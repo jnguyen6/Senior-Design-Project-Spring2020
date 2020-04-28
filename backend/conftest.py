@@ -21,7 +21,8 @@ def patient_gen(
         age_range: (int, int) = None,
         income_range: (int, int) = None,
         bill_range: (int, int) = None,
-        preferred_sex: str = None
+        preferred_sex: str = None,
+        offset: int = 0
 ):
     """
     Pytest Fixture to generate patients
@@ -33,7 +34,7 @@ def patient_gen(
     :return: The generated patient dictionary
     """
     patient_dict = {}
-    for index in range(0, number_of_patients):
+    for index in range(0 + offset, number_of_patients + offset):
         patient_id = index
 
         if age_range is not None:
