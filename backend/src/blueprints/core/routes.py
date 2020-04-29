@@ -155,27 +155,6 @@ def analyze_patient():
         "patient": patId
     }
 
-# Create and enter a new patient into DB
-@bp.route("/patients/<int:account_id>,<string:gender>,<int:birth_year>,<string:address_zip>,<int:family_income>,<int:bill_amount>", methods=['POST'])
-def create_patient(account_id, gender, birth_year, address_zip, family_income, bill_amount):
-    newPatient = Patient()
-    newPatient.accountId = account_id
-    newPatient.gender = gender
-    newPatient.birth_year = birth_year
-    newPatient.address_zip = address_zip
-    newPatient.family_income = family_income
-    newPatient.bill_amount = bill_amount
-    db.session.add(newPatient)
-    db.session.commit()
-    return {
-        "Account ID": newPatient.accountId,
-        "Gender": newPatient.gender,
-        "Birth Year": newPatient.birth_year,
-        "Address Zip": newPatient.address_zip,
-        "Family Income": newPatient.family_income,
-        "Bill Amount": newPatient.bill_amount
-    }
-
 # Get all updated cohorts
 @bp.route("/patient/cohorts")
 def get_cohorts():
