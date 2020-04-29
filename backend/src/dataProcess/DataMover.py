@@ -27,7 +27,6 @@ def moveData():
             if plineCount == 0:
                 plineCount += 1
             else:
-                header_content = {'Content-type': 'application/json'}
                 account_id = row[0]
                 gender = row[1]
                 birth_year = row[2]
@@ -57,7 +56,6 @@ def moveData():
             if clineCount == 0:
                 clineCount += 1
             else:
-                header_content = {'Content-type': 'application/json'}
                 account_id = row[0]
                 notification_date_time = row[1]
                 method = row[2]
@@ -84,7 +82,6 @@ def moveData():
             if wlineCount == 0:
                 wlineCount += 1
             else:
-                header_content = {'Content-type': 'application/json'}
                 account_id = row[0]
                 event_id = row[1]
                 bill_status = row[2]
