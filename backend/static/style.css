@@ -1,42 +1,30 @@
-h1 {
+h1, h2, p, table, div {
     font-family: Verdana, Geneva, Tahoma, sans-serif
 }
 
 table {
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
     border-collapse: collapse;
 }
-
-p {
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-}
-
 th {
     padding: 15px;
     text-align: left;
   }
-
 td {
     padding: 15px;
     text-align: left;
 }
-
 tr:nth-child(even) {background-color: #f2f2f2;}
 
- /* Pagination links */
- .pagination a {
-    color: black;
-    float: left;
-    padding: 8px 16px;
-    text-decoration: none;
-    transition: background-color .3s;
-  }
-
-  /* Style the active/current link */
-  .pagination a.active {
-    background-color: dodgerblue;
-    color: white;
-  }
-
-  /* Add a grey background color on mouse-over */
-  .pagination a:hover:not(.active) {background-color: #ddd;}
+form {
+    display: table;
+}
+div {
+    display: table-row;
+}
+label {
+    display: table-cell;
+    padding: 10pt;
+}
+input {
+    display: table-cell;
+}

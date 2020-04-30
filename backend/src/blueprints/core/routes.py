@@ -45,7 +45,7 @@ def info_view():
     return jsonify(output)
 
 # Create a new learning job and store that in the job queue database
-@bp.route("/jobs/<string:algorithm", methods=['POST'])
+@bp.route("/jobs/<string:algorithm>", methods=['POST'])
 def create_job(algorithm):
     from src.models.QueueJob import QueueJob
     new_queue_job = QueueJob()
@@ -60,6 +60,7 @@ def create_job(algorithm):
 
     return {
         "jobId": new_queue_job.id,
+        "algorithm": algorithm,
         "status": status,
         "dateCreated": new_queue_job.date_created
     }
@@ -148,7 +149,7 @@ def analyze_patient():
     patient = request.get_json()
 
     patId = patient['id']
-    cid = categorizeFromBuckets(patient)    
+    cid = categorizeFromBuckets(patient)
 
     return {
         "cid": cid,
@@ -160,10 +161,10 @@ def analyze_patient():
 def get_cohorts():
     #TODO add database flag so that this can update status as retrieved
     cohorts = Cohort.query.all()
-    
+
     condensedCohorts = create_cohort_list(cohorts)
     return build_json_response(json.dumps(condensedCohorts, default=str))
-  
+
 
 def create_cohort_list(cohorts):
     """

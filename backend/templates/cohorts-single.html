@@ -1,40 +1,38 @@
 <html>
     <head>
-        <title>List of Cohorts</title>
+        <title>Cohorts - {{cohortID}}</title>
         <link rel= "stylesheet" type= "text/css" href= "/static/style.css" media="all">
         <script type=text/javascript src="/static/script.js"></script>
     </head>
 
     <body>
-        <h1>Cohorts</h1>
+        <h1>Cohorts for {{cohortID}}</h1>
 
         <p><a href="/">Back to Main</a></p>
+        <p><a href="/view/cohorts">Back to Cohorts</a></p>
 
         <table id="dataTable">
 
             {% if cohorts|length > 0 %}
-
             <tr>
                 {% set ns = namespace(idx=0) %}
                 {% for key in cohorts[0].keys() %}
-                  <th onclick="sortTable({{ns.idx}})">{{ key }}</th>
-                  {% set ns.idx = ns.idx + 1 %}
+                    <th onclick="sortTable({{ns.idx}})">{{ key }}</th>
+                    {% set ns.idx = ns.idx + 1 %}
                 {% endfor %}
-                <th>view demographics breakdown?</th>
             </tr>
                 {% for cohort in cohorts %}
                 <tr>
                     {% set ns = namespace(id=-1) %}
                     {% for key,value in cohort.items() %}
 
-                      {% if key == "cohort ID" %}
-                          {% set ns.id = value %}
-                      {% endif %}
+                        {% if key == "cohort ID" %}
+                            {% set ns.id = value %}
+                        {% endif %}
 
-                      <td>{{ value }}</td>
+                        <td>{{ value }}</td>
 
                     {% endfor %}
-                    <td><button onclick="expandCohort({{ns.id}})">breakdown</button></td>
                 </tr>
                 {% endfor %}
             {% else %}
