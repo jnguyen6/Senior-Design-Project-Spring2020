@@ -60,6 +60,7 @@ def create_job(algorithm):
 
     return {
         "jobId": new_queue_job.id,
+        "algorithm": algorithm,
         "status": status,
         "dateCreated": new_queue_job.date_created
     }
