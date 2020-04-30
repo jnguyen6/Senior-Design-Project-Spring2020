@@ -14,7 +14,7 @@ executor = "*"
 scikit-learn = "*"
 pandas = "*"
 pytz = "*"
-requests= "*"
+requests = "*"
 
 [requires]
 python_version = "3.7"
