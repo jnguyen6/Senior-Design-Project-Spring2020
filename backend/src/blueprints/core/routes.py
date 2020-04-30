@@ -28,7 +28,8 @@ def build_json_response(obj):
 def usage_info_filter():
     usage_info = "Invalid argument. To filter the list of jobs in the job queue,"
     usage_info += " provide the following information in the GET request url:\n"
-    usage_info += "/jobs?filter=[NOT_STARTED] | [IN_PROGRESS] | [DONE] | [CANCELED]"
+    usage_info += "/jobs?filter=[job_status]\n"
+    usage_info += "Job statuses: NOT_STARTED, IN_PROGRESS, DONE, or CANCELED"
     return usage_info
 
 @bp.route('/info', methods=["GET"])
@@ -45,7 +46,7 @@ def info_view():
     return jsonify(output)
 
 # Create a new learning job and store that in the job queue database
-@bp.route("/jobs/<string:algorithm", methods=['POST'])
+@bp.route("/jobs/<string:algorithm>", methods=['POST'])
 def create_job(algorithm):
     from src.models.QueueJob import QueueJob
     new_queue_job = QueueJob()
