@@ -36,7 +36,8 @@ def get_cohort_by_user_stats():
             patientDict['gender'] = 'F'
         patientDict['income'] = int(form['income'])
         patientDict['billAmount'] = int(form['billAmount'])
-        patientDict['OptOut'] = form['optOut']
+        # patientDict['OptOut'] = form['optOut']
+        patientDict['OptOut'] = "" # currently no functionality
 
         # find where this patient falls into a cohort
         cID = str(categorizeFromBuckets(patientDict))
