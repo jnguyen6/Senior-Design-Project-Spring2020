@@ -37,7 +37,7 @@ def info_view():
     # Return list of routes
     output = {
         "info": "GET /help",
-        "create new job": "POST /jobs",
+        "create new job": "POST /jobs?algorithm=[algorithm]",
         "get job by id": "GET /jobs/<job_id>",
         "get all existing jobs": "GET /jobs",
         "cancel job by id": "PATCH /jobs/cancel/<job_id>",
