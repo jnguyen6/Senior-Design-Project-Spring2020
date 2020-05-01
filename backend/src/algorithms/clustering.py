@@ -8,6 +8,7 @@ import numpy as np
 from sklearn.cluster import MiniBatchKMeans
 from sklearn.cluster import SpectralClustering
 from sklearn.cluster import AgglomerativeClustering
+from sklearn.preprocessing import StandardScaler
 from datetime import date
 import src.algorithms.machine_learning_variable_getter as mlVar
 import statistics
@@ -26,19 +27,103 @@ populates cohort database
 """
 def clusteringAlgorithm(clusterAlgorithm, test=False, testData = None):
     cluster_size = 6
-    clusterCycles = []
-
-    
 
     if test == True:
         X, frequencies = testData[0],testData[1]
     else:
         X, frequencies = createDataSet()
     
-    if len(X.shape[1] != 4):
+    if X.shape[1] != 4:
         return
 
+    scaler = StandardScaler()
+    X = scaler.fit_transform(X)
+
     model = algorithms[clusterAlgorithm](n_clusters=cluster_size)
+
+    if clusterAlgorithm == 'minibatchKmean':
+        kmeansPredict(model, X, frequencies, scaler, cluster_size)
+    else:
+        otherPrediction(model, X, frequencies, scaler, cluster_size)
+
+"""
+Populate cohorts with other algorithms
+"""
+def otherPrediction(model, X, frequencies, scaler, cluster_size):
+    vals = model.fit_predict(X)
+    clusterCycles = []
+    yhat = unique(vals)
+
+    #Find indices for patients per cluster
+    clusterIndices = []
+    for cluster in yhat:
+        indices = where(vals == cluster) 
+        clusterIndices.append(indices)
+    
+    #Find shared cycle lengths
+    for i in range(len(clusterIndices)):
+        cluster = clusterIndices[i]
+        paperTotal = []
+        textTotal = []
+        emailTotal = []
+        for i in np.nditer(cluster[0]):
+            paperTotal.append(frequencies[i][0] / 3)
+            textTotal.append(frequencies[i][1] / 3)
+            emailTotal.append(frequencies[i][2] / 3)
+        paperMedian = statistics.median(paperTotal)
+        textMedian = statistics.median(textTotal)
+        emailMedian = statistics.median(emailTotal)
+        
+        clusterCycles.append([floor(paperMedian), floor(textMedian), floor(emailMedian)])
+
+    
+    cohorts = Cohort.query.all()
+    for cohort in cohorts:
+        gender = 0
+        if cohort.gender == "M":
+            gender = 1
+        else:
+            gender = 2
+        age = cohort.ageMin
+        income = cohort.incomeMin
+        bill_amount = cohort.billAmountMin
+
+        cohortExample = np.array([gender,age,income,bill_amount]).reshape(1,4)
+        
+        """
+        find closest test point and use its cluster
+        """
+        closest = 0
+        dist = (cohortExample - X[0])**2
+        dist = np.sum(dist)
+        dist = np.sqrt(dist)
+        for patientIndex in range(1, len(X)):
+            newdist = (cohortExample - X[patientIndex])**2
+            newdist = np.sum(dist)
+            newdist = np.sqrt(dist)
+
+            if newdist < dist:
+                dist = newdist
+                closest = patientIndex
+        
+        clusterPred = vals[closest]
+
+
+        cohort.paper = clusterCycles[clusterPred][0]
+        cohort.text = clusterCycles[clusterPred][1]
+        cohort.email = clusterCycles[clusterPred][2]
+
+        cohort.cid = int(str(cohort.paper) + str(cohort.text) + str(cohort.email))
+        db.session.add(cohort)
+    db.session.commit()
+
+    
+"""
+Populate cohorts from kmeans prediction
+"""
+def kmeansPredict(model, X, frequencies, scaler, cluster_size):
+
+    clusterCycles = []
     model.fit(X)
     yhat = model.predict(X)
     clusters = unique(yhat)
@@ -78,6 +163,7 @@ def clusteringAlgorithm(clusterAlgorithm, test=False, testData = None):
         bill_amount = cohort.billAmountMin
 
         cohortExample = np.array([gender,age,income,bill_amount]).reshape(1,4)
+        cohortExample = scaler.fit_transform(cohortExample)
         clusterPred = model.predict(cohortExample)
 
         cohort.paper = clusterCycles[clusterPred[0]][0]
@@ -87,7 +173,6 @@ def clusteringAlgorithm(clusterAlgorithm, test=False, testData = None):
         cohort.cid = int(str(cohort.paper) + str(cohort.text) + str(cohort.email))
         db.session.add(cohort)
     db.session.commit()
-
 
 """
 Polls database for patients to cluster
@@ -135,5 +220,3 @@ def createDataSet():
     arrayList = np.array(prunedList)
 
     return arrayList,prunedFreqs
-
-clusteringAlgorithm("minibatchKmean")

@@ -48,6 +48,7 @@ def ageTest(clustertype):
     clusteringAlgorithm(clustertype, test=True, testData=[arraylist, freqList])
     
     correct = 0
+    semiCorrect = 0
     total = 0
 
     cohorts = Cohort.query.all()
@@ -55,19 +56,31 @@ def ageTest(clustertype):
         if cohort.ageMax <= 20:
             if cohort.cid == 200:
                 correct += 1
+            elif (cohort.cid // 100) == 2:
+                semiCorrect += 1
         elif cohort.ageMax <= 40:
             if cohort.cid == 20:
                 correct += 1
+            else:
+                c = cohort.cid % 100
+                c = c - (c % 10)
+                if c == 20:
+                    semiCorrect += 1 
         else:
             if cohort.cid == 2:
                 correct += 1
+            elif cohort.cid % 10 == 2:
+                semiCorrect += 1
+
         total += 1
     
     accuracy = correct/total
+    partialAccuracy = (correct + semiCorrect) / total
     if accuracy < .7:
-        print(f"Test Failed: {accuracy} accuracy")
+        print(f"Test Failed: {accuracy} accuracy | {partialAccuracy} Partial Accuracy")
     else:
-        print(f"Test Passed: {accuracy} accuracy")
+        print(f"Test Passed: {accuracy} accuracy | {partialAccuracy} Partial Accuracy")
+
 
 
 """
@@ -96,6 +109,7 @@ def genderTest(clustertype):
     clusteringAlgorithm(clustertype, test=True, testData=[arraylist, freqList])
 
     correct = 0
+    semiCorrect = 0
     total = 0
     
 
@@ -104,16 +118,22 @@ def genderTest(clustertype):
         if cohort.ageMax == 'M':
             if cohort.cid == 200:
                 correct += 1
+            elif (cohort.cid // 100) == 2:
+                semiCorrect += 1
         else:
             if cohort.cid == 2:
                 correct += 1
+            elif (cohort.cid % 10) == 2:
+                semiCorrect += 1
+
         total += 1
     
     accuracy = correct/total
+    partialAccuracy = (correct + semiCorrect) / total
     if accuracy < .7:
-        print(f"Test Failed: {accuracy} accuracy")
+        print(f"Test Failed: {accuracy} accuracy | {partialAccuracy} Partial Accuracy")
     else:
-        print(f"Test Passed: {accuracy} accuracy")
+        print(f"Test Passed: {accuracy} accuracy | {partialAccuracy} Partial Accuracy")
 
 
 """
@@ -147,6 +167,7 @@ def incomeTest(clustertype):
 
 
     correct = 0
+    semiCorrect = 0
     total = 0
 
     cohorts = Cohort.query.all()
@@ -154,18 +175,28 @@ def incomeTest(clustertype):
         if cohort.incomeMax <= 40000:
             if cohort.cid == 200:
                 correct += 1
+            elif (cohort.cid // 100) == 2 :
+                semiCorrect += 1
         elif cohort.incomeMax <= 100000:
             if cohort.cid == 20:
                 correct += 1
+            else:
+                c = cohort.cid % 100
+                c = c - (c % 10)
+                if c == 20:
+                    semiCorrect += 1
         else:
             if cohort.cid == 2:
                 correct += 1
+            if (cohort.cid % 10) == 2:
+                semiCorrect += 1
         total += 1
     
     accuracy = correct/total
+    partialAccuracy = (correct + semiCorrect) / total
     if accuracy < .7:
-        print(f"Test Failed: {accuracy} accuracy")
+        print(f"Test Failed: {accuracy} accuracy | {partialAccuracy} Partial Accuracy")
     else:
-        print(f"Test Passed: {accuracy} accuracy")
+        print(f"Test Passed: {accuracy} accuracy | {partialAccuracy} Partial Accuracy")
 
-runAllTests('minibatchKmean')
+runAllTests('spectral')
