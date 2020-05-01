@@ -95,7 +95,7 @@ def createDataSet():
         ageList.append(currentYear - birth)
     
     #Get Income
-    incomeList = mlVar.get_all_patients_family_income
+    incomeList = mlVar.get_all_patients_family_income()
 
     #Get gender
     genderList = mlVar.get_all_patients_gender()
@@ -107,7 +107,7 @@ def createDataSet():
             genderValueList.append(2)
 
     #Get bill
-    billList = mlVar.get_all_patients_bill_amount
+    billList = mlVar.get_all_patients_bill_amount()
 
     freqPaper = mlVar.get_all_patients_frequency("PAPER")
     freqText = mlVar.get_all_patients_frequency("TEXT")
