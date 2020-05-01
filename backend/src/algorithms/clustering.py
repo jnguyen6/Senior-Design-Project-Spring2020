@@ -28,10 +28,16 @@ def clusteringAlgorithm(clusterAlgorithm, test=False, testData = None):
     cluster_size = 6
     clusterCycles = []
 
+    
+
     if test == True:
         X, frequencies = testData[0],testData[1]
     else:
         X, frequencies = createDataSet()
+    
+    if len(X.shape[1] != 4):
+        return
+
     model = algorithms[clusterAlgorithm](n_clusters=cluster_size)
     model.fit(X)
     yhat = model.predict(X)
@@ -95,7 +101,7 @@ def createDataSet():
         ageList.append(currentYear - birth)
     
     #Get Income
-    incomeList = mlVar.get_all_patients_family_income
+    incomeList = mlVar.get_all_patients_family_income()
 
     #Get gender
     genderList = mlVar.get_all_patients_gender()
@@ -107,7 +113,7 @@ def createDataSet():
             genderValueList.append(2)
 
     #Get bill
-    billList = mlVar.get_all_patients_bill_amount
+    billList = mlVar.get_all_patients_bill_amount()
 
     freqPaper = mlVar.get_all_patients_frequency("PAPER")
     freqText = mlVar.get_all_patients_frequency("TEXT")
