@@ -8,13 +8,29 @@ from src.algorithms.clustering import clusteringAlgorithm
 from datetime import date
 import numpy as np
 from src.models.Cohort import Cohort
+import pytest
 
 
 
-def runAllTests(clustertype):
-    ageTest(clustertype)
-    genderTest(clustertype)
-    incomeTest(clustertype)
+def test_runAllTests():
+    status = ageTest("minibatchKmean")
+    assert status == 1
+    status = genderTest("minibatchKmean")
+    assert status == 1
+    status = incomeTest("minibatchKmean")
+    assert status == 1
+    status = ageTest("agglomeration")
+    assert status == 1
+    status = genderTest("agglomeration")
+    assert status == 1
+    status = incomeTest("agglomeration")
+    assert status == 1
+    status = ageTest("spectral")
+    assert status == 1
+    status = genderTest("spectral")
+    assert status == 1
+    status = incomeTest("spectral")
+    assert status == 1
 
 """
 Tests the cluster algorithm based on biased age groups
@@ -80,6 +96,8 @@ def ageTest(clustertype):
     else:
         print(f"Test Passed: {accuracy} accuracy | {partialAccuracy} Partial Accuracy")
 
+    assert accuracy > 0
+    return 1
 
 
 """
@@ -134,6 +152,8 @@ def genderTest(clustertype):
     else:
         print(f"Test Passed: {accuracy} accuracy | {partialAccuracy} Partial Accuracy")
 
+    assert accuracy > 0
+    return 1
 
 """
 Tests the cluster algorithm based on biased income groups
@@ -197,3 +217,6 @@ def incomeTest(clustertype):
         print(f"Test Failed: {accuracy} accuracy | {partialAccuracy} Partial Accuracy")
     else:
         print(f"Test Passed: {accuracy} accuracy | {partialAccuracy} Partial Accuracy")
+
+    assert accuracy > 0
+    return 1

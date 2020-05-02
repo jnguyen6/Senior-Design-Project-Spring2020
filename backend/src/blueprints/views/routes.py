@@ -65,10 +65,14 @@ def get_cohorts_view():
     for cohortID in cohortSet:
         cDict = dict()
         cDict['cohort ID'] = cohortID
-        cID = str(cohortID)
-        cDict['papers per cycle'] = cID[0]
-        cDict['texts per cycle'] = cID[1]
-        cDict['emails per cycle'] = cID[2]
+        idCalc = cohortID
+        #cID = str(cohortID)
+        cDict['papers per cycle'] = idCalc // 100
+        idCalc = idCalc % 100
+
+        cDict['texts per cycle'] = idCalc // 10
+        idCalc = idCalc % 10
+        cDict['emails per cycle'] = idCalc
         cohortList.append(cDict)
 
     cohortList = sortList(cohortList, 'cohort ID')

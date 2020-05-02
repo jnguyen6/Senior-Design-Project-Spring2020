@@ -146,10 +146,10 @@ def run_logistic_regression():
     print("Retrieving variables for: patient demographics (X1), frequency of communication methods (X2),"
           " and success/failures for patients (Y)...")
     # X1 variables (patient demographics)
-    patient_age_list = ml_variable_getter.getAllPatientsAgeInOrder()
-    patient_income_list = ml_variable_getter.getAllPatientsFamilyIncome()
-    patient_gender_list = ml_variable_getter.getAllPatientsGenderInOrder()
-    patient_bill_list = ml_variable_getter.getAllPatientsBillAmount()
+    patient_age_list = ml_variable_getter.get_all_patients_age()
+    patient_income_list = ml_variable_getter.get_all_patients_family_income()
+    patient_gender_list = ml_variable_getter.get_all_patients_gender()
+    patient_bill_list = ml_variable_getter.get_all_patients_bill_amount()
 
     # Convert patient gender list to numeric representation of gender (ex.: M = 1, F = 2)
     patient_gender_numeric_list=[]
@@ -160,12 +160,12 @@ def run_logistic_regression():
             patient_gender_numeric_list.append(2)
 
     # X2 variables (freq. of communication methods)
-    freq_email_list = ml_variable_getter.getAllPatientsFreq("EMAIL")
-    freq_paper_list = ml_variable_getter.getAllPatientsFreq("PAPER")
-    freq_text_list = ml_variable_getter.getAllPatientsFreq("TEXT")
+    freq_email_list = ml_variable_getter.get_all_patients_frequency("EMAIL")
+    freq_paper_list = ml_variable_getter.get_all_patients_frequency("PAPER")
+    freq_text_list = ml_variable_getter.get_all_patients_frequency("TEXT")
 
     # Y variables (successes and failures of patients paying their bills)
-    succ_list = ml_variable_getter.getAllPatientsSuccess()
+    succ_list = ml_variable_getter.get_all_patients_success()
 
     # If success score > 0, then the patient paid their bill (1). Otherwise, the patient did not pay their bill (0)
     y_list = []

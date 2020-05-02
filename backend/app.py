@@ -19,7 +19,6 @@ def create_tables():
 
 """
 Populate buckets of cohorts
-#TODO need clarification on if tables need to be created on startup always
 Seems like they would not
 """
 @app.before_first_request
