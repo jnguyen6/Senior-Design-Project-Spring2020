@@ -1,11 +1,11 @@
 import json
 import pytest
 from src.blueprints.core.routes import get_status_string
-from src.models.QueueJob import QueueStatus
+import src.models.QueueStatus
 
 @pytest.fixture
 def queue_shape():
-    return dict(jobId=0, status="", dateCreated="").keys()
+    return dict(jobId=0, status="", algorithm="", dateCreated="").keys()
 
 def test_get_client_shape():
     assert "NOT_STARTED" == get_status_string(0)
@@ -21,7 +21,7 @@ def test_info_view(client):
     assert len(body.keys()) == 6
 
 def test_create_job(client, queue_shape):
-    resp = client.post('/jobs')
+    resp = client.post('/jobs/spectral')
     assert resp.status_code == 200
 
     assert json.loads(resp.data).keys() == queue_shape
@@ -42,7 +42,7 @@ def test_invalid_filters(client):
     assert resp.status_code == 400
 
 def test_get_job_by_id(client, queue_shape):
-    new_job = json.loads(client.post('/jobs').data)
+    new_job = json.loads(client.post('/jobs/spectral').data)
     resp = client.get(f'/jobs/{new_job["jobId"]}')
     assert resp.status_code == 200
 
@@ -52,11 +52,11 @@ def test_get_job_by_id(client, queue_shape):
     assert resp_json["jobId"] == new_job["jobId"]
 
 def test_get_job_by_id_fail(client):
-    resp = client.get(f'/jobs/{-1}')
+    resp = client.get(f'/jobs/100')
     assert resp.status_code == 404
 
 def test_cancel_job(client, queue_shape):
-    new_job = json.loads(client.post('/jobs').data)
+    new_job = json.loads(client.post('/jobs/spectral').data)
     resp = client.patch(f'/jobs/cancel/{new_job["jobId"]}')
     assert resp.status_code == 200
 
@@ -65,7 +65,7 @@ def test_cancel_job(client, queue_shape):
 
     assert resp_json["jobId"] == new_job["jobId"]
 
-    assert resp_json["status"] == QueueStatus.CANCELLED.value
+    assert resp_json["status"] == 3
 
 def test_analyze_patient(client):
     patient = dict(

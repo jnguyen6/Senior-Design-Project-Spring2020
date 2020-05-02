@@ -1,6 +1,7 @@
 from src.blueprints.core.bp import bp
 from flask import request
 from flask import jsonify, Response
+from flask import abort
 from app import db
 from src.models.Cohort import Cohort
 from src.models.Communication import Communication
@@ -60,8 +61,8 @@ def create_job(algorithm):
 
     return {
         "jobId": new_queue_job.id,
-        "algorithm": algorithm,
         "status": status,
+        "algorithm": algorithm,
         "dateCreated": new_queue_job.date_created
     }
 
@@ -71,13 +72,15 @@ def get_job(job_id):
     from src.models.QueueJob import QueueJob
     job = QueueJob.query.get(job_id)
 
+    if job == None:
+        abort(404) 
     # Check the current status of the newly created job
     status = get_status_string(job.status)
 
     return {
         "jobId": job.id,
         "status": status,
-        "Algorithm":job.algorithm,
+        "algorithm":job.algorithm,
         "dateCreated": job.date_created
     }
 
@@ -118,7 +121,7 @@ def get_jobs():
         jobDict = dict()
         jobDict['jobId'] = job.id
         jobDict['status'] = get_status_string(job.status)
-        jobDict['jobAlgorithm'] = job.algorithm
+        jobDict['algorithm'] = job.algorithm
         jobDict['dateCreated'] = job.date_created
         jobDictList.append(jobDict)
 
@@ -138,7 +141,7 @@ def cancel_job(job_id):
     return {
         "jobId": job.id,
         "status": 3,
-        "Algorithm":job.algorithm,
+        "algorithm":job.algorithm,
         "dateCreated": job.date_created
     }
 
