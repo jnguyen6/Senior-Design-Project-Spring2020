@@ -40,10 +40,13 @@ def get_cohort_by_user_stats():
         patientDict['OptOut'] = "" # currently no functionality
 
         # find where this patient falls into a cohort
-        cID = str(categorizeFromBuckets(patientDict))
-        patientDict['paperID'] = cID[0]
-        patientDict['textID'] = cID[1]
-        patientDict['emailID'] = cID[2]
+        cID = categorizeFromBuckets(patientDict)
+        patientDict['paperID'] = cID // 100
+        cID = cID % 100
+
+        patientDict['textID'] = cID // 10
+        cID = cID % 10
+        patientDict['emailID'] = cID
         patientDict['fullDateOfBirth'] = form['fullDateOfBirth']
 
         return render_template("user-form-single.html", cohort=patientDict)
