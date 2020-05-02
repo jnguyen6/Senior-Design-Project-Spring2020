@@ -29,7 +29,8 @@ def build_json_response(obj):
 def usage_info_filter():
     usage_info = "Invalid argument. To filter the list of jobs in the job queue,"
     usage_info += " provide the following information in the GET request url:\n"
-    usage_info += "/jobs?filter=[NOT_STARTED] | [IN_PROGRESS] | [DONE] | [CANCELED]"
+    usage_info += "/jobs?filter=[job_status]\n"
+    usage_info += "Job statuses: NOT_STARTED, IN_PROGRESS, DONE, or CANCELED"
     return usage_info
 
 @bp.route('/info', methods=["GET"])
@@ -37,7 +38,7 @@ def info_view():
     # Return list of routes
     output = {
         "info": "GET /help",
-        "create new job": "POST /jobs",
+        "create new job": "POST /jobs?algorithm=[algorithm]",
         "get job by id": "GET /jobs/<job_id>",
         "get all existing jobs": "GET /jobs",
         "cancel job by id": "PATCH /jobs/cancel/<job_id>",
