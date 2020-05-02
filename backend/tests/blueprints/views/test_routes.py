@@ -17,10 +17,6 @@ def test_get_cohort_by_user_stats(client):
     assert resp.status_code == 200
     assert 'text/html' in resp.content_type
 
-    resp = client.post("/view/user")
-    assert resp.status_code == 200
-    assert 'text/html' in resp.content_type
-
 def test_get_cohorts_view(client):
     resp = client.get('/view/cohorts')
     assert resp.status_code == 200
