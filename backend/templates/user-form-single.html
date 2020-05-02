@@ -1,0 +1,54 @@
+<html>
+    <head>
+        <title>Find a Cohort</title>
+        <link rel= "stylesheet" type= "text/css" href= "/static/style.css" media="all">
+        <script type=text/javascript src="/static/script.js"></script>
+    </head>
+
+    <body>
+        <h1>User</h1>
+
+        <p><a href="/">Back to Main</a></p>
+        <p><a href="/view/user">Back to Find a Cohort</a></p>
+
+        <h2>User Information</h2>
+        <form>
+          <div>
+            <label>date of birth</label>
+            <input readonly type="date" name="fullDateOfBirth" value="{{cohort.fullDateOfBirth}}">
+          </div>
+          <div>
+            <label>gender</label>
+            <input readonly type="text" name="gender" value="{{cohort.gender}}">
+          </div>
+          <div>
+            <label>income</label>
+            <input readonly type="number" name="income" value="{{cohort.income}}">
+          </div>
+          <div>
+            <label>bill amount</label>
+            <input readonly type="number" name="billAmount" value="{{cohort.billAmount}}">
+          </div>
+          <!-- <div>
+            <label>opt out?</label>
+            <input readonly type="text" name="optOut" value="{{cohort.OptOut}}">
+          </div> -->
+        </form>
+
+        <div></div>
+
+        <h2>Cohort Breakdown</h2>
+        <div>
+          <label>Number of papers</label>
+          <input readonly value="{{cohort.paperID}}">
+        </div>
+        <div>
+          <label>Number of texts</label>
+          <input readonly value="{{cohort.textID}}">
+        </div>
+        <div>
+          <label>Number of e-mails</label>
+          <input readonly value="{{cohort.emailID}}">
+        </div>
+    </body>
+</html>

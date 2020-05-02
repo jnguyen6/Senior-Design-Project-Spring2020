@@ -1,9 +1,25 @@
 from src.blueprints.core.bp import bp
 from flask import request
 from flask import jsonify, Response
+from flask import abort
 from app import db
 from src.models.Cohort import Cohort
+from src.models.Communication import Communication
+from src.models.WebActivity import WebActivity
+from src.models.Patient import Patient
 import json
+from src.algorithms.categorize import categorizeFromBuckets
+from datetime import date
+
+def get_status_string(status_int):
+    if status_int is 0:
+        return "NOT_STARTED"
+    elif status_int is 1:
+        return "IN_PROGRESS"
+    elif status_int is 2:
+        return "DONE"
+    elif status_int is 3:
+        return "CANCELED"
 
 # Converts the object into a JSON format to be sent as part a response message
 def build_json_response(obj):
@@ -13,7 +29,8 @@ def build_json_response(obj):
 def usage_info_filter():
     usage_info = "Invalid argument. To filter the list of jobs in the job queue,"
     usage_info += " provide the following information in the GET request url:\n"
-    usage_info += "/jobs?filter=[NOT_STARTED] | [IN_PROGRESS] | [DONE] | [CANCELED]"
+    usage_info += "/jobs?filter=[job_status]\n"
+    usage_info += "Job statuses: NOT_STARTED, IN_PROGRESS, DONE, or CANCELED"
     return usage_info
 
 @bp.route('/info', methods=["GET"])
@@ -21,7 +38,7 @@ def info_view():
     # Return list of routes
     output = {
         "info": "GET /help",
-        "create new job": "POST /jobs",
+        "create new job": "POST /jobs?algorithm=[algorithm]",
         "get job by id": "GET /jobs/<job_id>",
         "get all existing jobs": "GET /jobs",
         "cancel job by id": "PATCH /jobs/cancel/<job_id>",
@@ -30,28 +47,24 @@ def info_view():
     return jsonify(output)
 
 # Create a new learning job and store that in the job queue database
-@bp.route("/jobs", methods=['POST'])
-def create_job():
+@bp.route("/jobs/<string:algorithm>", methods=['POST'])
+def create_job(algorithm):
     from src.models.QueueJob import QueueJob
-    newQueueJob = QueueJob()
-    db.session.add(newQueueJob)
+    new_queue_job = QueueJob()
+    new_queue_job.algorithm = algorithm
+    db.session.add(new_queue_job)
     db.session.commit()
 
     # Check the current status of the newly created job
     status = ""
-    if newQueueJob.status is 0:
+    if new_queue_job.status is 0:
         status = "NOT_STARTED"
-    elif newQueueJob.status is 1:
-        status = "IN_PROGRESS"
-    elif newQueueJob.status is 2:
-        status = "DONE"
-    elif newQueueJob.status is 3:
-        status = "CANCELED"
 
     return {
-        "jobId": newQueueJob.id,
+        "jobId": new_queue_job.id,
         "status": status,
-        "dateCreated": newQueueJob.date_created
+        "algorithm": algorithm,
+        "dateCreated": new_queue_job.date_created
     }
 
 # Retrieve a learning job from the job queue database by id
@@ -60,20 +73,15 @@ def get_job(job_id):
     from src.models.QueueJob import QueueJob
     job = QueueJob.query.get(job_id)
 
+    if job == None:
+        abort(404) 
     # Check the current status of the newly created job
-    status = ""
-    if job.status is 0:
-        status = "NOT_STARTED"
-    elif job.status is 1:
-        status = "IN_PROGRESS"
-    elif job.status is 2:
-        status = "DONE"
-    elif job.status is 3:
-        status = "CANCELED"
+    status = get_status_string(job.status)
 
     return {
         "jobId": job.id,
         "status": status,
+        "algorithm":job.algorithm,
         "dateCreated": job.date_created
     }
 
@@ -94,7 +102,7 @@ def get_jobs():
     else:
         # If the number of arguments provided is not 1, then return a usage message
         if len(job_filter) > 1:
-            usage_info_filter()
+            return Response(usage_info_filter(), status=400)
         # Otherwise, check if the correct argument is given, and filter the list of jobs
         # accordingly
         if str(job_filter['filter']) == "NOT_STARTED":
@@ -106,21 +114,15 @@ def get_jobs():
         elif str(job_filter['filter']) == "CANCELED":
             jobs = QueueJob.query.filter(QueueJob.status == 3)
         else:
-            usage_info_filter()
+            return Response(usage_info_filter(), status=400)
 
     # After retrieving all of the requested jobs from the database, convert the jobs into a
     # a list of dictionaries before sending the list as a response message
     for job in jobs:
         jobDict = dict()
         jobDict['jobId'] = job.id
-        if job.status is 0:
-            jobDict['status'] = "NOT_STARTED"
-        elif job.status is 1:
-            jobDict['status'] = "IN_PROGRESS"
-        elif job.status is 2:
-            jobDict['status'] = "DONE"
-        elif job.status is 3:
-            jobDict['status'] = "CANCELED"
+        jobDict['status'] = get_status_string(job.status)
+        jobDict['algorithm'] = job.algorithm
         jobDict['dateCreated'] = job.date_created
         jobDictList.append(jobDict)
 
@@ -140,26 +142,52 @@ def cancel_job(job_id):
     return {
         "jobId": job.id,
         "status": 3,
+        "algorithm":job.algorithm,
         "dateCreated": job.date_created
     }
 
 # Run the learning algorithm against the patient and categorize them
 @bp.route("/patient/analyze", methods=['POST'])
 def analyze_patient():
-    return "Patient JSON posted to learning algorithm"
+    #TODO add flag that won't let it run if not updated list of cohorts
+    patient = request.get_json()
+
+    patId = patient['id']
+    cid = categorizeFromBuckets(patient)
+
+    return {
+        "cid": cid,
+        "patient": patId
+    }
 
 # Get all updated cohorts
 @bp.route("/patient/cohorts")
 def get_cohorts():
+    #TODO add database flag so that this can update status as retrieved
     cohorts = Cohort.query.all()
-    chtList = []
-    for cht in cohorts:
-        chtDict = dict()
-        chtDict['cohortId'] = cht.cid
-        chtDict['paper'] = cht.paper
-        chtDict['text'] = cht.text
-        chtDict['email'] = cht.email
-        chtList.append(chtDict)
-    return build_json_response(json.dumps(chtList, default=str))
+
+    condensedCohorts = create_cohort_list(cohorts)
+    return build_json_response(json.dumps(condensedCohorts, default=str))
 
 
+def create_cohort_list(cohorts):
+    """
+    Helper function for returning cohorts
+    Finds all unique cycles and the returns them as a list of dictionaries
+    Dict has cycle length attributes
+    :param cohorts: The list of cohorts
+    :return A list of dictionaries that contain all cycles in each cohort
+    """
+    condensedCohorts = set()
+    for coh in cohorts:
+        condensedCohorts.add(coh.cid)
+
+    structuredResponse = []
+    for coh in condensedCohorts:
+        new_dict = dict()
+        new_dict['cohortId'] = coh.cid
+        new_dict['paper'] = coh.paper
+        new_dict['text'] = coh.text
+        new_dict['email'] = coh.email
+        structuredResponse.append(new_dict)
+    return structuredResponse

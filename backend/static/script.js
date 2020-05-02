@@ -1,6 +1,13 @@
+/**
+ * Sorts a table by a provided column index.
+ *
+ * taken from https://www.w3schools.com/howto/howto_js_sort_table.asp
+ *
+ * @param {*} n column index by which to sort
+ */
 function sortTable(n) {
     var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
-    table = document.getElementById("jobTable");
+    table = document.getElementById("dataTable");
 
     switching = true;
     // Set the sorting direction to ascending:
@@ -54,29 +61,27 @@ function sortTable(n) {
     }
 }
 
-async function queueJob() {
-
-    await fetch('/jobs', {
-        method: 'POST',
-        headers: {
-            'Content-type': 'application/json; charset=UTF-8',
-        }
-    });
-    window.location.replace("/view/jobs");
-}
-
+/**
+ * Cancels the job (given its ID number) and redirects to the Jobs page.
+ *
+ * @param {*} id job ID
+ */
 async function cancelJob(id) {
 
     await fetch('/jobs/cancel/' + id, {
         method: 'PATCH',
         headers: {
-            'Content-type': 'application/json; charset=UTF-8',
+            'Content-type': 'application/json; charset=UTF-8'
         }
     });
     window.location.replace("/view/jobs");
 }
 
-function getPrettyDate(datetime) {
-
-    return "";
+/**
+ * Navigates to the page with the cohorts associated with the cohort ID.
+ *
+ * @param {*} cohortID the ID of the cohort
+ */
+function expandCohort(cohortID) {
+    window.location.replace("/view/cohorts/" + cohortID)
 }

@@ -1,0 +1,49 @@
+<html>
+    <head>
+        <title>Find a Cohort</title>
+        <link rel= "stylesheet" type= "text/css" href= "/static/style.css" media="all">
+        <script type=text/javascript src="/static/script.js"></script>
+    </head>
+
+    <body>
+        <h1>Find a Cohort</h1>
+
+        <p><a href="/">Back to Main</a></p>
+
+        <h2>User Information</h2>
+        <form action = "/view/user" method = "POST" enctype="application/json">
+          <div>
+            <label>date of birth</label>
+            <input type="date" name="fullDateOfBirth">
+          </div>
+          <div>
+            <label>gender</label>
+            <select name="gender">
+              <option disabled selected></option>
+              <option value="male">male</option>
+              <option value="female">female</option>
+            </select>
+          </div>
+          <div>
+            <label>income</label>
+            <input type="number" name="income">
+          </div>
+          <div>
+            <label>bill amount</label>
+            <input type="number" name="billAmount">
+          </div>
+          <!-- <div>
+            <label>opt out?</label>
+            <select name="optOut">
+              <option disabled selected></option>
+              <option value="yes">yes</option>
+              <option value="no">no</option>
+            </select>
+          </div> -->
+          <div>
+            <!-- <label></label> -->
+            <input type="submit" value="find cohort info"/>
+          </div>
+        </form>
+    </body>
+</html>

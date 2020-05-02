@@ -1,8 +1,6 @@
 FROM python:3.7
 
 ENV PYTHONDONTWRITEBYTECODE 1
-# ENV DATABASE_URL "postgresql://admin:Password1!@localhost/backend"
-ENV FLASK_DEBUG True
 
 RUN mkdir /app
 WORKDIR /app
