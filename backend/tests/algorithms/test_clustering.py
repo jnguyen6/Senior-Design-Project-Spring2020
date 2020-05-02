@@ -5,7 +5,6 @@ from conftest import *
 from app import db
 from app import populateCohorts
 from src.algorithms.clustering import clusteringAlgorithm
-import pytest
 from datetime import date
 import numpy as np
 from src.models.Cohort import Cohort
@@ -198,5 +197,3 @@ def incomeTest(clustertype):
         print(f"Test Failed: {accuracy} accuracy | {partialAccuracy} Partial Accuracy")
     else:
         print(f"Test Passed: {accuracy} accuracy | {partialAccuracy} Partial Accuracy")
-
-runAllTests('spectral')
